@@ -1,0 +1,100 @@
+### Monitoring ###
+resource "aws_cloudwatch_log_group" "default" {
+  name = "default"
+
+  tags = merge(var.tags, {
+    "application" : "platform"
+  })
+}
+
+### Kafka ###
+resource "aws_msk_serverless_cluster" "main" {
+  cluster_name = "${var.resource_prefix}platformmsk"
+
+  vpc_config {
+    subnet_ids = data.aws_subnets.default.ids
+    security_group_ids = [
+      data.aws_security_group.default.id
+    ]
+  }
+
+  client_authentication {
+    sasl {
+      iam {
+        enabled = true
+      }
+    }
+  }
+}
+
+### IAM ###
+data "aws_iam_policy_document" "msk" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "kafka-cluster:Connect",
+      "kafka-cluster:AlterCluster",
+      "kafka-cluster:DescribeCluster",
+    ]
+    resources = [
+      "arn:aws:kafka:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster/${aws_msk_serverless_cluster.main.cluster_name}/*",
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kafka-cluster:*Topic*",
+      "kafka-cluster:WriteData",
+      "kafka-cluster:ReadData",
+    ]
+    resources = [
+      "arn:aws:kafka:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:topic/${aws_msk_serverless_cluster.main.cluster_name}/*",
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kafka-cluster:AlterGroup",
+      "kafka-cluster:DescribeGroup",
+    ]
+    resources = [
+      "arn:aws:kafka:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:group/${aws_msk_serverless_cluster.main.cluster_name}/*",
+    ]
+  }
+}
+data "aws_iam_policy_document" "msk_assume_role" {
+  statement {
+    effect = "Allow"
+    principals {
+      type = "Service"
+      identifiers = [
+        "ec2.amazonaws.com",
+      ]
+
+    }
+    actions = [
+      "sts:AssumeRole",
+    ]
+  }
+}
+resource "aws_iam_role" "msk" {
+  name               = "msk-connect"
+  assume_role_policy = data.aws_iam_policy_document.msk_assume_role.json
+
+  inline_policy {
+    name   = aws_msk_serverless_cluster.main.cluster_name
+    policy = data.aws_iam_policy_document.msk.json
+  }
+}
+
+### Outputs ###
+data "aws_msk_bootstrap_brokers" "main" {
+  # Workaround because the resource aws_msk_serverless_cluster does not expose the endpoint attribute
+  # (see https://github.com/hashicorp/terraform-provider-aws/issues/28005)
+  cluster_arn = aws_msk_serverless_cluster.main.arn
+}
+output "aws_msk_serverless_cluster" {
+  value = data.aws_msk_bootstrap_brokers.main
+}
