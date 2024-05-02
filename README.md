@@ -1,4 +1,4 @@
-# Nebuly Platform on AWS
+# Nebuly Platform (AWS)
 
 Terraform module for provisioning Nebuly Platform resources on AWS.
 
