@@ -48,6 +48,29 @@ variable "eks_managed_node_group_defaults" {
     ami_type = "AL2_x86_64"
   }
 }
+variable "eks_managed_node_groups" {
+  description = "The managed node groups of the EKS cluster."
+  type = map(object({
+    instance_types = set(string)
+    min_size       = number
+    max_size       = number
+    desired_size   = optional(number)
+  }))
+  default = {
+    "workers" : {
+      instance_types = ["r5.xlarge"]
+      min_size       = 3
+      max_size       = 3
+      desired_size   = 3
+    }
+    "gpu-a100" : {
+      instance_types = ["p4d.24xlarge"]
+      min_size       = 0
+      max_size       = 1
+      desired_size   = 0
+    }
+  }
+}
 variable "eks_service_accounts" {
   description = "The service accounts that will able to assume the EKS IAM Role."
   type = list(object({

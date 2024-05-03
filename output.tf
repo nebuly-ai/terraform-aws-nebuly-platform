@@ -20,5 +20,5 @@ output "cluster_get_credentials" {
   value       = "aws eks --region ${var.region} update-kubeconfig --name ${module.eks.cluster_name}"
 }
 output "cluster_role_arn" {
-  value = module.iam_eks_role.iam_role_arn
+  value = module.eks_iam_role.iam_role_arn
 }

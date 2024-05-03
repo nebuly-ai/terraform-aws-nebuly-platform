@@ -44,14 +44,14 @@ module "eks" {
   eks_managed_node_group_defaults = var.eks_managed_node_group_defaults
 
   eks_managed_node_groups = {
-    one = {
-      name = "node-group-1"
+    for k, obj in var.eks_managed_node_groups : k => {
+      name = k
 
-      instance_types = ["t3.small"]
+      instance_types = obj.instance_types
 
-      min_size     = 1
-      max_size     = 3
-      desired_size = 1
+      min_size     = obj.min_size
+      max_size     = obj.max_size
+      desired_size = obj.desired_size
     }
   }
 
