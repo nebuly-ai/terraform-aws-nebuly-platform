@@ -23,3 +23,44 @@ output "eks_iam_role_arn" {
   description = "The ARN of the EKS IAM role."
   value       = module.eks_iam_role.iam_role_arn
 }
+
+
+
+
+### ----------- Postgres (RDS) ----------- ###
+output "analytics_db" {
+  description = "Details of the analytics DB hosted on an RDS instance."
+  value = {
+    arn                  = module.rds_postgres_analytics.db_instance_arn
+    instance_address     = module.rds_postgres_analytics.db_instance_address
+    instance_endpoint    = module.rds_postgres_analytics.db_instance_endpoint
+    username             = module.rds_postgres_analytics.db_instance_username
+    password_secret_name = aws_secretsmanager_secret.rds_analytics_credentials.name
+  }
+}
+output "analytics_db_credentials" {
+  description = "Credentials for connecting with the analytics DB."
+  value = {
+    username = module.rds_postgres_analytics.db_instance_username
+    password = random_password.rds_analytics.result
+  }
+  sensitive = true
+}
+output "auth_db" {
+  description = "Details of the auth DB hosted on an RDS instance."
+  value = {
+    arn                  = module.rds_postgres_auth.db_instance_arn
+    instance_address     = module.rds_postgres_auth.db_instance_address
+    instance_endpoint    = module.rds_postgres_auth.db_instance_endpoint
+    username             = module.rds_postgres_auth.db_instance_username
+    password_secret_name = aws_secretsmanager_secret.rds_auth_credentials.name
+  }
+}
+output "auth_db_credentials" {
+  description = "Credentials for connecting with the auth DB."
+  value = {
+    username = module.rds_postgres_auth.db_instance_username
+    password = random_password.rds_auth.result
+  }
+  sensitive = true
+}

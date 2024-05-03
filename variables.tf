@@ -25,6 +25,94 @@ variable "subnet_ids" {
 }
 
 
+### RDS Postgres ###
+variable "rds_db_username" {
+  description = "The username to connect with the Postgres RDS databases."
+  type        = string
+  default     = "nebulyadmin"
+}
+variable "rds_postgres_version" {
+  description = "The PostgreSQL version to use for the RDS instances."
+  type        = string
+  default     = "16"
+}
+variable "rds_postgres_family" {
+  description = "The PostgreSQL family to use for the RDS instances."
+  type        = string
+  default     = "postgres16"
+}
+variable "rds_multi_availability_zone_enabled" {
+  description = "If True, provision the RDS instances on multiple availability zones."
+  type        = bool
+  default     = true
+}
+variable "rds_maintenance_window" {
+  description = "The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00'."
+  type        = string
+  default     = "Mon:00:00-Mon:03:00"
+}
+variable "rds_backup_window" {
+  description = "Description: The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance_window."
+  type        = string
+  default     = "03:00-06:00"
+}
+variable "rds_backup_retention_period" {
+  description = "The retention period, in days, of the daily backups."
+  type        = number
+  default     = 14
+}
+variable "rds_analytics_instance_type" {
+  description = "The instance type of the RDS instance hosting the analytics DB."
+  type        = string
+  default     = "db.m7g.xlarge"
+}
+variable "rds_analytics_storage" {
+  description = "Storage settings of the analytics DB."
+  type = object({
+    allocated_gb : number
+    max_allocated_gb : number
+    type : string
+    iops : optional(number, null)
+  })
+
+  default = {
+    allocated_gb     = 32
+    max_allocated_gb = 128
+    type             = "gp2"
+  }
+
+  validation {
+    condition     = contains(["gp2", "gp3"], var.rds_analytics_storage.type)
+    error_message = "allowed storage types are gp2, gp3"
+  }
+}
+variable "rds_auth_instance_type" {
+  description = "The instance type of the RDS instance hosting the auth DB."
+  type        = string
+  default     = "t4g.small"
+}
+variable "rds_auth_storage" {
+  description = "Storage settings of the auth DB."
+  type = object({
+    allocated_gb : number
+    max_allocated_gb : number
+    type : string
+    iops : optional(number, null)
+  })
+
+  default = {
+    allocated_gb     = 2
+    max_allocated_gb = 32
+    type             = "gp2"
+  }
+
+  validation {
+    condition     = contains(["gp2", "gp3"], var.rds_auth_storage.type)
+    error_message = "allowed storage types are gp2, gp3"
+  }
+}
+
+
 ### EKS ###
 variable "eks_kubernetes_version" {
   description = "Specify which Kubernetes release to use."

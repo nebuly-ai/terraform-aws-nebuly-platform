@@ -1,8 +1,14 @@
 terraform {
+  required_version = ">= 1.0"
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~>5.45"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~>3.6"
     }
   }
 }
@@ -12,6 +18,169 @@ locals {
   eks_tags = merge(var.tags, {
     "platform.nebuly.com/component" : "eks"
   })
+
+  rds_instance_name_analytics = "${var.resource_prefix}platformanalytics"
+  rds_instance_name_auth      = "${var.resource_prefix}platformauth"
+}
+
+
+### ----------- Postgres (RDS) ----------- ###
+module "rds_postgres_analytics" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "~>6.5.5"
+
+  identifier = local.rds_instance_name_analytics
+
+  engine               = "postgres"
+  engine_version       = var.rds_postgres_version
+  major_engine_version = var.rds_postgres_version
+  family               = var.rds_postgres_family
+  instance_class       = var.rds_analytics_instance_type
+
+  allocated_storage     = var.rds_analytics_storage.allocated_gb
+  max_allocated_storage = var.rds_analytics_storage.max_allocated_gb
+  storage_type          = var.rds_analytics_storage.type
+  iops                  = var.rds_analytics_storage.iops
+
+  db_name  = "analytics"
+  username = var.rds_db_username
+  port     = 5432
+
+  password                                = random_password.rds_analytics.result
+  manage_master_user_password             = false
+  manage_master_user_password_rotation    = false
+  master_user_password_rotate_immediately = false
+
+  multi_az = var.rds_multi_availability_zone_enabled
+
+  vpc_security_group_ids = [
+    data.aws_security_group.default.id
+  ]
+
+  maintenance_window              = var.rds_maintenance_window
+  backup_window                   = var.rds_backup_window
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  create_cloudwatch_log_group     = true
+
+  backup_retention_period = var.rds_backup_retention_period
+  skip_final_snapshot     = true
+  deletion_protection     = false
+
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
+  create_monitoring_role                = true
+  monitoring_interval                   = 60
+  monitoring_role_name                  = var.resource_prefix
+  monitoring_role_use_name_prefix       = true
+
+  parameters = [
+    {
+      name  = "autovacuum"
+      value = 1
+    },
+    {
+      name  = "client_encoding"
+      value = "utf8"
+    }
+  ]
+
+  tags = var.tags
+}
+resource "random_password" "rds_analytics" {
+  length           = 16
+  special          = true
+  override_special = "!#%&*()-_=+[]{}<>?"
+}
+resource "aws_secretsmanager_secret" "rds_analytics_credentials" {
+  name = format("%s-rds-analytics-credentials", var.resource_prefix)
+}
+resource "aws_secretsmanager_secret_version" "rds_analytics_password" {
+  secret_id = aws_secretsmanager_secret.rds_analytics_credentials.id
+  secret_string = jsonencode(
+    {
+      "username" : module.rds_postgres_analytics.db_instance_username,
+      "password" : random_password.rds_analytics.result
+    }
+  )
+}
+
+module "rds_postgres_auth" {
+  source  = "terraform-aws-modules/rds/aws"
+  version = "~>6.5.5"
+
+  identifier = local.rds_instance_name_auth
+
+  engine               = "postgres"
+  engine_version       = var.rds_postgres_version
+  major_engine_version = var.rds_postgres_version
+  family               = var.rds_postgres_family
+  instance_class       = var.rds_auth_instance_type
+
+  allocated_storage     = var.rds_auth_storage.allocated_gb
+  max_allocated_storage = var.rds_auth_storage.max_allocated_gb
+  storage_type          = var.rds_auth_storage.type
+  iops                  = var.rds_auth_storage.iops
+
+  db_name  = "auth"
+  username = var.rds_db_username
+  port     = 5432
+
+  password                                = random_password.rds_auth.result
+  manage_master_user_password             = false
+  manage_master_user_password_rotation    = false
+  master_user_password_rotate_immediately = false
+
+  multi_az = var.rds_multi_availability_zone_enabled
+
+  vpc_security_group_ids = [
+    data.aws_security_group.default.id
+  ]
+
+  maintenance_window              = var.rds_maintenance_window
+  backup_window                   = var.rds_backup_window
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  create_cloudwatch_log_group     = true
+
+  backup_retention_period = var.rds_backup_retention_period
+  skip_final_snapshot     = true
+  deletion_protection     = false
+
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
+  create_monitoring_role                = true
+  monitoring_interval                   = 60
+  monitoring_role_name                  = var.resource_prefix
+  monitoring_role_use_name_prefix       = true
+
+  parameters = [
+    {
+      name  = "autovacuum"
+      value = 1
+    },
+    {
+      name  = "client_encoding"
+      value = "utf8"
+    }
+  ]
+
+  tags = var.tags
+}
+resource "random_password" "rds_auth" {
+  length           = 16
+  special          = true
+  override_special = "!#%&*()-_=+[]{}<>?"
+}
+resource "aws_secretsmanager_secret" "rds_auth_credentials" {
+  name = format("%s-rds-auth-credentials", var.resource_prefix)
+}
+resource "aws_secretsmanager_secret_version" "rds_auth_password" {
+  secret_id = aws_secretsmanager_secret.rds_auth_credentials.id
+  secret_string = jsonencode(
+    {
+      "username" : module.rds_postgres_auth.db_instance_username,
+      "password" : random_password.rds_auth.result
+    }
+  )
 }
 
 
