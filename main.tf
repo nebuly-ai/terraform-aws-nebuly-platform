@@ -249,3 +249,12 @@ module "eks_iam_role" {
   tags = local.eks_tags
 }
 
+
+### ----------- EKS ----------- ###
+resource "aws_secretsmanager_secret" "openai_api_key" {
+  name = format("%s-openai-api-key", var.resource_prefix)
+}
+resource "aws_secretsmanager_secret_version" "openai_api_key" {
+  secret_id     = aws_secretsmanager_secret.openai_api_key.id
+  secret_string = var.openai_api_key
+}

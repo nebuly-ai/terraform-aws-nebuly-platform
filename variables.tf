@@ -14,6 +14,13 @@ variable "region" {
 }
 
 
+### External credentials ###
+variable "openai_api_key" {
+  description = "The API Key used for authenticating with OpenAI."
+  type        = string
+}
+
+
 ### Networking ###
 variable "vpc_id" {
   type        = string

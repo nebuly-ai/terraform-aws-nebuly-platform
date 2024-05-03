@@ -64,3 +64,10 @@ output "auth_db_credentials" {
   }
   sensitive = true
 }
+
+
+### ----------- External Secrets ----------- ###
+output "openai_api_key_secret_name" {
+  description = "The name of the secret storing the OpenAI API Key."
+  value       = aws_secretsmanager_secret.openai_api_key.name
+}

@@ -28,6 +28,7 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="output_eks_cluster_security_group_id"></a> [eks\_cluster\_security\_group\_id](#output\_eks\_cluster\_security\_group\_id) | Security group ids attached to the cluster control plane. |
 | <a name="output_eks_iam_role_arn"></a> [eks\_iam\_role\_arn](#output\_eks\_iam\_role\_arn) | The ARN of the EKS IAM role. |
 | <a name="output_eks_service_accounts"></a> [eks\_service\_accounts](#output\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. |
+| <a name="output_openai_api_key_secret_name"></a> [openai\_api\_key\_secret\_name](#output\_openai\_api\_key\_secret\_name) | The name of the secret storing the OpenAI API Key. |
 
 
 ## Inputs
@@ -40,6 +41,7 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="input_eks_managed_node_group_defaults"></a> [eks\_managed\_node\_group\_defaults](#input\_eks\_managed\_node\_group\_defaults) | The default settings of the EKS managed node groups. | <pre>object({<br>    ami_type = string<br>  })</pre> | <pre>{<br>  "ami_type": "AL2_x86_64"<br>}</pre> | no |
 | <a name="input_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#input\_eks\_managed\_node\_groups) | The managed node groups of the EKS cluster. | <pre>map(object({<br>    instance_types = set(string)<br>    min_size       = number<br>    max_size       = number<br>    desired_size   = optional(number)<br>  }))</pre> | <pre>{<br>  "gpu-a100": {<br>    "desired_size": 0,<br>    "instance_types": [<br>      "p4d.24xlarge"<br>    ],<br>    "max_size": 1,<br>    "min_size": 0<br>  },<br>  "workers": {<br>    "desired_size": 3,<br>    "instance_types": [<br>      "r5.xlarge"<br>    ],<br>    "max_size": 3,<br>    "min_size": 3<br>  }<br>}</pre> | no |
 | <a name="input_eks_service_accounts"></a> [eks\_service\_accounts](#input\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. | <pre>list(object({<br>    name : string<br>    namespace : string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "nebuly",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "nebuly",<br>    "namespace": "default"<br>  }<br>]</pre> | no |
+| <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | The API Key used for authenticating with OpenAI. | `string` | n/a | yes |
 | <a name="input_rds_analytics_instance_type"></a> [rds\_analytics\_instance\_type](#input\_rds\_analytics\_instance\_type) | The instance type of the RDS instance hosting the analytics DB. | `string` | `"db.m7g.xlarge"` | no |
 | <a name="input_rds_analytics_storage"></a> [rds\_analytics\_storage](#input\_rds\_analytics\_storage) | Storage settings of the analytics DB. | <pre>object({<br>    allocated_gb : number<br>    max_allocated_gb : number<br>    type : string<br>    iops : optional(number, null)<br>  })</pre> | <pre>{<br>  "allocated_gb": 32,<br>  "max_allocated_gb": 128,<br>  "type": "gp2"<br>}</pre> | no |
 | <a name="input_rds_auth_instance_type"></a> [rds\_auth\_instance\_type](#input\_rds\_auth\_instance\_type) | The instance type of the RDS instance hosting the auth DB. | `string` | `"t4g.small"` | no |
@@ -60,8 +62,10 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 ## Resources
 
 
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#254)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#94)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#173)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#257)
 - resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#97)
 - resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#176)
 - resource.random_password.rds_analytics (/terraform-docs/main.tf#89)
