@@ -250,11 +250,24 @@ module "eks_iam_role" {
 }
 
 
-### ----------- EKS ----------- ###
+### ----------- External secrets ----------- ###
 resource "aws_secretsmanager_secret" "openai_api_key" {
   name = format("%s-openai-api-key", var.resource_prefix)
 }
 resource "aws_secretsmanager_secret_version" "openai_api_key" {
   secret_id     = aws_secretsmanager_secret.openai_api_key.id
   secret_string = var.openai_api_key
+
 }
+
+
+### ----------- S3 Storage ----------- ###
+resource "aws_s3_bucket" "ai_models" {
+  bucket_prefix = format("%s-%s", var.resource_prefix, "ai-models")
+  tags          = var.tags
+}
+resource "aws_iam_role_policy_attachment" "ai_models__eks_reader" {
+  role       = module.eks_iam_role.iam_role_name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess" # Attach the read-only S3 access policy
+}
+
