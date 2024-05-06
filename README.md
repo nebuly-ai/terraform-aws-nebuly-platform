@@ -29,6 +29,7 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="output_eks_iam_role_arn"></a> [eks\_iam\_role\_arn](#output\_eks\_iam\_role\_arn) | The ARN of the EKS IAM role. |
 | <a name="output_eks_service_accounts"></a> [eks\_service\_accounts](#output\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. |
 | <a name="output_openai_api_key_secret_name"></a> [openai\_api\_key\_secret\_name](#output\_openai\_api\_key\_secret\_name) | The name of the secret storing the OpenAI API Key. |
+| <a name="output_s3_bucket_ai_models"></a> [s3\_bucket\_ai\_models](#output\_s3\_bucket\_ai\_models) | The details of the bucket used as model registry for storing the AI Models |
 
 
 ## Inputs
@@ -62,6 +63,8 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 ## Resources
 
 
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#269)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#265)
 - resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#254)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#94)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#173)
