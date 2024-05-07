@@ -10,8 +10,8 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.45.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~>5.45 |
+| <a name="provider_random"></a> [random](#provider\_random) | ~>3.6 |
 
 
 ## Outputs
@@ -32,7 +32,6 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="output_s3_bucket_ai_models"></a> [s3\_bucket\_ai\_models](#output\_s3\_bucket\_ai\_models) | The details of the bucket used as model registry for storing the AI Models |
 
 
-
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -49,7 +48,6 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="input_rds_auth_instance_type"></a> [rds\_auth\_instance\_type](#input\_rds\_auth\_instance\_type) | The instance type of the RDS instance hosting the auth DB. | `string` | `"t4g.small"` | no |
 | <a name="input_rds_auth_storage"></a> [rds\_auth\_storage](#input\_rds\_auth\_storage) | Storage settings of the auth DB. | <pre>object({<br>    allocated_gb : number<br>    max_allocated_gb : number<br>    type : string<br>    iops : optional(number, null)<br>  })</pre> | <pre>{<br>  "allocated_gb": 20,<br>  "max_allocated_gb": 32,<br>  "type": "gp2"<br>}</pre> | no |
 | <a name="input_rds_availability_zone"></a> [rds\_availability\_zone](#input\_rds\_availability\_zone) | The availabilty zone of the RDS instances. | `string` | `null` | no |
-
 | <a name="input_rds_backup_retention_period"></a> [rds\_backup\_retention\_period](#input\_rds\_backup\_retention\_period) | The retention period, in days, of the daily backups. | `number` | `14` | no |
 | <a name="input_rds_backup_window"></a> [rds\_backup\_window](#input\_rds\_backup\_window) | Description: The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance\_window. | `string` | `"03:00-06:00"` | no |
 | <a name="input_rds_db_username"></a> [rds\_db\_username](#input\_rds\_db\_username) | The username to connect with the Postgres RDS databases. | `string` | `"nebulyadmin"` | no |
@@ -66,12 +64,12 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 ## Resources
 
 
-- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#277)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#273)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#262)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#288)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#284)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#273)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#101)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#180)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#265)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#276)
 - resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#104)
 - resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#183)
 - resource.random_password.rds_analytics (/terraform-docs/main.tf#96)
