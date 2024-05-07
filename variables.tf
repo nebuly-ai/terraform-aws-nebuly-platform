@@ -58,6 +58,7 @@ variable "rds_availability_zone" {
   type        = string
   default     = null
 }
+
 variable "rds_maintenance_window" {
   description = "The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00'."
   type        = string

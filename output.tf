@@ -82,3 +82,4 @@ output "s3_bucket_ai_models" {
     arn : aws_s3_bucket.ai_models.arn
   }
 }
+
