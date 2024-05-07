@@ -53,6 +53,12 @@ variable "rds_multi_availability_zone_enabled" {
   type        = bool
   default     = true
 }
+variable "rds_availability_zone" {
+  description = "The availabilty zone of the RDS instances."
+  type        = string
+  default     = null
+}
+
 variable "rds_maintenance_window" {
   description = "The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00'."
   type        = string
@@ -108,7 +114,7 @@ variable "rds_auth_storage" {
   })
 
   default = {
-    allocated_gb     = 2
+    allocated_gb     = 20 # min available
     max_allocated_gb = 32
     type             = "gp2"
   }

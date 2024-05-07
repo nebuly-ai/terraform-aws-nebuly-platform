@@ -71,3 +71,15 @@ output "openai_api_key_secret_name" {
   description = "The name of the secret storing the OpenAI API Key."
   value       = aws_secretsmanager_secret.openai_api_key.name
 }
+
+
+### ----------- S3 Storage ----------- ###
+output "s3_bucket_ai_models" {
+  description = "The details of the bucket used as model registry for storing the AI Models"
+  value = {
+    name : aws_s3_bucket.ai_models.id
+    domain_name : aws_s3_bucket.ai_models.bucket_domain_name
+    arn : aws_s3_bucket.ai_models.arn
+  }
+}
+

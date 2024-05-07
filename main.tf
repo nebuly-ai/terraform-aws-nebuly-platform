@@ -23,6 +23,12 @@ locals {
   rds_instance_name_auth      = "${var.resource_prefix}platformauth"
 }
 
+resource "random_string" "secrets_suffix" {
+  lower   = true
+  length  = 6
+  special = false
+}
+
 
 ### ----------- Postgres (RDS) ----------- ###
 module "rds_postgres_analytics" {
@@ -51,7 +57,8 @@ module "rds_postgres_analytics" {
   manage_master_user_password_rotation    = false
   master_user_password_rotate_immediately = false
 
-  multi_az = var.rds_multi_availability_zone_enabled
+  multi_az          = var.rds_multi_availability_zone_enabled
+  availability_zone = var.rds_availability_zone
 
   vpc_security_group_ids = [
     data.aws_security_group.default.id
@@ -92,7 +99,7 @@ resource "random_password" "rds_analytics" {
   override_special = "!#%&*()-_=+[]{}<>?"
 }
 resource "aws_secretsmanager_secret" "rds_analytics_credentials" {
-  name = format("%s-rds-analytics-credentials", var.resource_prefix)
+  name = format("%s-rds-analytics-credentials-%s", var.resource_prefix, random_string.secrets_suffix.result)
 }
 resource "aws_secretsmanager_secret_version" "rds_analytics_password" {
   secret_id = aws_secretsmanager_secret.rds_analytics_credentials.id
@@ -171,7 +178,7 @@ resource "random_password" "rds_auth" {
   override_special = "!#%&*()-_=+[]{}<>?"
 }
 resource "aws_secretsmanager_secret" "rds_auth_credentials" {
-  name = format("%s-rds-auth-credentials", var.resource_prefix)
+  name = format("%s-rds-auth-credentials-%s", var.resource_prefix, random_string.secrets_suffix.result)
 }
 resource "aws_secretsmanager_secret_version" "rds_auth_password" {
   secret_id = aws_secretsmanager_secret.rds_auth_credentials.id
@@ -194,6 +201,8 @@ module "eks" {
 
   vpc_id                         = var.vpc_id
   subnet_ids                     = var.subnet_ids
+  control_plane_subnet_ids       = var.subnet_ids
+
   cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
 
   enable_cluster_creator_admin_permissions = var.eks_enable_cluster_creator_admin_permissions
@@ -227,7 +236,7 @@ module "eks" {
   tags = local.eks_tags
 }
 module "eks_iam_role" {
-  # Role for reading from AWS Secrets Manager trhough ASCP
+  # Role for reading from AWS Secrets Manager through ASCP
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~>5.39.0"
 
@@ -258,3 +267,26 @@ resource "aws_secretsmanager_secret_version" "openai_api_key" {
   secret_id     = aws_secretsmanager_secret.openai_api_key.id
   secret_string = var.openai_api_key
 }
+
+
+### ----------- External secrets ----------- ###
+resource "aws_secretsmanager_secret" "openai_api_key" {
+  name = format("%s-openai-api-key-%s", var.resource_prefix, random_string.secrets_suffix.result)
+}
+resource "aws_secretsmanager_secret_version" "openai_api_key" {
+  secret_id     = aws_secretsmanager_secret.openai_api_key.id
+  secret_string = var.openai_api_key
+
+}
+
+
+### ----------- S3 Storage ----------- ###
+resource "aws_s3_bucket" "ai_models" {
+  bucket_prefix = format("%s-%s", var.resource_prefix, "ai-models")
+  tags          = var.tags
+}
+resource "aws_iam_role_policy_attachment" "ai_models__eks_reader" {
+  role       = module.eks_iam_role.iam_role_name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess" # Attach the read-only S3 access policy
+}
+

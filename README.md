@@ -29,6 +29,8 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="output_eks_iam_role_arn"></a> [eks\_iam\_role\_arn](#output\_eks\_iam\_role\_arn) | The ARN of the EKS IAM role. |
 | <a name="output_eks_service_accounts"></a> [eks\_service\_accounts](#output\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. |
 | <a name="output_openai_api_key_secret_name"></a> [openai\_api\_key\_secret\_name](#output\_openai\_api\_key\_secret\_name) | The name of the secret storing the OpenAI API Key. |
+| <a name="output_s3_bucket_ai_models"></a> [s3\_bucket\_ai\_models](#output\_s3\_bucket\_ai\_models) | The details of the bucket used as model registry for storing the AI Models |
+
 
 
 ## Inputs
@@ -45,7 +47,9 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="input_rds_analytics_instance_type"></a> [rds\_analytics\_instance\_type](#input\_rds\_analytics\_instance\_type) | The instance type of the RDS instance hosting the analytics DB. | `string` | `"db.m7g.xlarge"` | no |
 | <a name="input_rds_analytics_storage"></a> [rds\_analytics\_storage](#input\_rds\_analytics\_storage) | Storage settings of the analytics DB. | <pre>object({<br>    allocated_gb : number<br>    max_allocated_gb : number<br>    type : string<br>    iops : optional(number, null)<br>  })</pre> | <pre>{<br>  "allocated_gb": 32,<br>  "max_allocated_gb": 128,<br>  "type": "gp2"<br>}</pre> | no |
 | <a name="input_rds_auth_instance_type"></a> [rds\_auth\_instance\_type](#input\_rds\_auth\_instance\_type) | The instance type of the RDS instance hosting the auth DB. | `string` | `"t4g.small"` | no |
-| <a name="input_rds_auth_storage"></a> [rds\_auth\_storage](#input\_rds\_auth\_storage) | Storage settings of the auth DB. | <pre>object({<br>    allocated_gb : number<br>    max_allocated_gb : number<br>    type : string<br>    iops : optional(number, null)<br>  })</pre> | <pre>{<br>  "allocated_gb": 2,<br>  "max_allocated_gb": 32,<br>  "type": "gp2"<br>}</pre> | no |
+| <a name="input_rds_auth_storage"></a> [rds\_auth\_storage](#input\_rds\_auth\_storage) | Storage settings of the auth DB. | <pre>object({<br>    allocated_gb : number<br>    max_allocated_gb : number<br>    type : string<br>    iops : optional(number, null)<br>  })</pre> | <pre>{<br>  "allocated_gb": 20,<br>  "max_allocated_gb": 32,<br>  "type": "gp2"<br>}</pre> | no |
+| <a name="input_rds_availability_zone"></a> [rds\_availability\_zone](#input\_rds\_availability\_zone) | The availabilty zone of the RDS instances. | `string` | `null` | no |
+
 | <a name="input_rds_backup_retention_period"></a> [rds\_backup\_retention\_period](#input\_rds\_backup\_retention\_period) | The retention period, in days, of the daily backups. | `number` | `14` | no |
 | <a name="input_rds_backup_window"></a> [rds\_backup\_window](#input\_rds\_backup\_window) | Description: The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance\_window. | `string` | `"03:00-06:00"` | no |
 | <a name="input_rds_db_username"></a> [rds\_db\_username](#input\_rds\_db\_username) | The username to connect with the Postgres RDS databases. | `string` | `"nebulyadmin"` | no |
@@ -62,14 +66,17 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 ## Resources
 
 
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#254)
-- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#94)
-- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#173)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#257)
-- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#97)
-- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#176)
-- resource.random_password.rds_analytics (/terraform-docs/main.tf#89)
-- resource.random_password.rds_auth (/terraform-docs/main.tf#168)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#277)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#273)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#262)
+- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#101)
+- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#180)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#265)
+- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#104)
+- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#183)
+- resource.random_password.rds_analytics (/terraform-docs/main.tf#96)
+- resource.random_password.rds_auth (/terraform-docs/main.tf#175)
+- resource.random_string.secrets_suffix (/terraform-docs/main.tf#26)
 - data source.aws_caller_identity.current (/terraform-docs/data.tf#2)
 - data source.aws_region.current (/terraform-docs/data.tf#3)
 - data source.aws_security_group.default (/terraform-docs/data.tf#15)
