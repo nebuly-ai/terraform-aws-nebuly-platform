@@ -199,9 +199,9 @@ module "eks" {
   cluster_name    = local.eks_cluster_name
   cluster_version = var.eks_kubernetes_version
 
-  vpc_id                         = var.vpc_id
-  subnet_ids                     = var.subnet_ids
-  control_plane_subnet_ids       = var.subnet_ids
+  vpc_id                   = var.vpc_id
+  subnet_ids               = var.subnet_ids
+  control_plane_subnet_ids = var.subnet_ids
 
   cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
 
@@ -258,15 +258,6 @@ module "eks_iam_role" {
   tags = local.eks_tags
 }
 
-
-### ----------- EKS ----------- ###
-resource "aws_secretsmanager_secret" "openai_api_key" {
-  name = format("%s-openai-api-key", var.resource_prefix)
-}
-resource "aws_secretsmanager_secret_version" "openai_api_key" {
-  secret_id     = aws_secretsmanager_secret.openai_api_key.id
-  secret_string = var.openai_api_key
-}
 
 
 ### ----------- External secrets ----------- ###
