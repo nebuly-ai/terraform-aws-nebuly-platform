@@ -244,6 +244,9 @@ module "eks_iam_role" {
 
   attach_external_secrets_policy                     = true
   external_secrets_secrets_manager_create_permission = true
+  attach_ebs_csi_policy                              = true
+  attach_efs_csi_policy                              = true
+  attach_cluster_autoscaler_policy                   = true
 
   oidc_providers = {
     one = {
