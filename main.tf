@@ -248,6 +248,10 @@ module "eks_iam_role" {
   attach_efs_csi_policy                              = true
   attach_cluster_autoscaler_policy                   = true
 
+  cluster_autoscaler_cluster_names = [
+    module.eks.cluster_name
+  ]
+
   oidc_providers = {
     one = {
       provider_arn = module.eks.oidc_provider_arn
