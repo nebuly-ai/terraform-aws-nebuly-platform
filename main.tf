@@ -243,6 +243,7 @@ module "eks" {
       labels = obj.labels
 
       instance_types = obj.instance_types
+      taints         = obj.taints
 
       min_size     = obj.min_size
       max_size     = obj.max_size

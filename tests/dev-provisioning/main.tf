@@ -49,6 +49,13 @@ module "main" {
   eks_kubernetes_version             = "1.28"
   eks_managed_node_groups = {
     "workers" : {
+      taints = [
+        {
+          key : "foo",
+          value : "bar",
+          effect : "NO_SCHEDULE",
+        }
+      ]
       instance_types = ["r5.xlarge"]
       min_size       = 1
       max_size       = 1

@@ -165,7 +165,13 @@ variable "eks_managed_node_groups" {
     desired_size   = optional(number)
     subnet_ids     = optional(list(string), null)
     ami_type       = optional(string, "AL2_x86_64")
-    labels         = optional(map(string), {})
+
+    labels = optional(map(string), {})
+    taints = optional(set(object({
+      key : string
+      value : string
+      effect : string
+    })), [])
   }))
   default = {
     "workers" : {
