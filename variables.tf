@@ -164,6 +164,7 @@ variable "eks_managed_node_groups" {
     max_size       = number
     desired_size   = optional(number)
     subnet_ids     = optional(list(string), null)
+    ami_type       = optional(string, "AL2_x86_64")
   }))
   default = {
     "workers" : {

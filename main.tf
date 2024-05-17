@@ -247,6 +247,7 @@ module "eks" {
       max_size     = obj.max_size
       desired_size = obj.desired_size
       subnet_ids   = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
+      ami_type     = obj.ami_type
 
       iam_role_additional_policies = {
         # Needed by the aws-ebs-csi-driver
