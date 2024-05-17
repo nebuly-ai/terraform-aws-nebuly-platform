@@ -163,6 +163,7 @@ variable "eks_managed_node_groups" {
     min_size       = number
     max_size       = number
     desired_size   = optional(number)
+    subnet_ids     = optional(list(string), null)
   }))
   default = {
     "workers" : {
