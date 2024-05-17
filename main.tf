@@ -84,6 +84,10 @@ module "rds_postgres_analytics" {
 
   parameters = [
     {
+      name : "rds.force_ssl"
+      value : "0"
+    },
+    {
       name  = "autovacuum"
       value = 1
     },
@@ -162,6 +166,10 @@ module "rds_postgres_auth" {
   monitoring_role_use_name_prefix       = true
 
   parameters = [
+    {
+      name : "rds.force_ssl"
+      value : "0"
+    },
     {
       name  = "autovacuum"
       value = 1
