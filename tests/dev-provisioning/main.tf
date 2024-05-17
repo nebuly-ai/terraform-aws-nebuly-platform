@@ -43,6 +43,8 @@ provider "aws" {
 module "main" {
   source = "../../"
 
+  security_group = data.aws_security_group.default
+
   eks_cluster_endpoint_public_access = true
   eks_kubernetes_version             = "1.28"
   eks_managed_node_groups = {

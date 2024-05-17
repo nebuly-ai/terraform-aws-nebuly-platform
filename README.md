@@ -57,6 +57,7 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="input_rds_postgres_version"></a> [rds\_postgres\_version](#input\_rds\_postgres\_version) | The PostgreSQL version to use for the RDS instances. | `string` | `"16"` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region where to provision the resources. | `string` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | The prefix that will be used for generating resource names. | `string` | n/a | yes |
+| <a name="input_security_group"></a> [security\_group](#input\_security\_group) | The security group to use. | <pre>object({<br>    name = string<br>    id   = string<br>  })</pre> | n/a | yes |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | The IDs of the subnets to attach to the Platform resources. | `set(string)` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Common tags that will be applied to all resources. | `map(string)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC to use. | `string` | n/a | yes |
@@ -64,19 +65,15 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 ## Resources
 
 
-- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#288)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#284)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#273)
-- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#101)
-- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#180)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#276)
-- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#104)
-- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#183)
-- resource.random_password.rds_analytics (/terraform-docs/main.tf#96)
-- resource.random_password.rds_auth (/terraform-docs/main.tf#175)
-- resource.random_string.secrets_suffix (/terraform-docs/main.tf#26)
-- data source.aws_caller_identity.current (/terraform-docs/data.tf#2)
-- data source.aws_region.current (/terraform-docs/data.tf#3)
-- data source.aws_security_group.default (/terraform-docs/data.tf#15)
-- data source.aws_subnets.default (/terraform-docs/data.tf#9)
-- data source.aws_vpc.default (/terraform-docs/data.tf#6)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#301)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#297)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#286)
+- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#103)
+- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#182)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#289)
+- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#106)
+- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#185)
+- resource.random_password.rds_analytics (/terraform-docs/main.tf#98)
+- resource.random_password.rds_auth (/terraform-docs/main.tf#177)
+- resource.random_string.secrets_suffix (/terraform-docs/main.tf#28)
+- data source.aws_caller_identity.current (/terraform-docs/main.tf#16)

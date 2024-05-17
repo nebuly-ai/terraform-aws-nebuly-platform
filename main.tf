@@ -13,6 +13,8 @@ terraform {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 locals {
   eks_cluster_name = "${var.resource_prefix}eks"
   eks_tags = merge(var.tags, {
@@ -61,7 +63,7 @@ module "rds_postgres_analytics" {
   availability_zone = var.rds_availability_zone
 
   vpc_security_group_ids = [
-    data.aws_security_group.default.id
+    var.security_group.id
   ]
 
   maintenance_window              = var.rds_maintenance_window
@@ -140,7 +142,7 @@ module "rds_postgres_auth" {
   multi_az = var.rds_multi_availability_zone_enabled
 
   vpc_security_group_ids = [
-    data.aws_security_group.default.id
+    var.security_group.id
   ]
 
   maintenance_window              = var.rds_maintenance_window
@@ -257,8 +259,6 @@ module "eks_iam_role" {
 
   attach_external_secrets_policy                     = true
   external_secrets_secrets_manager_create_permission = true
-  attach_ebs_csi_policy                              = true
-  attach_efs_csi_policy                              = true
 
   # TODO - it's likely that we don't need these if we use 
   # EKS managed node groups

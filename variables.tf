@@ -30,6 +30,13 @@ variable "subnet_ids" {
   type        = set(string)
   description = "The IDs of the subnets to attach to the Platform resources."
 }
+variable "security_group" {
+  type = object({
+    name = string
+    id   = string
+  })
+  description = "The security group to use."
+}
 
 
 ### RDS Postgres ###
