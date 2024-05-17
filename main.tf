@@ -217,6 +217,12 @@ module "eks" {
     vpc-cni = {
       most_recent = true
     }
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
+    aws-efs-csi-driver = {
+      most_recent = true
+    }
   }
 
   eks_managed_node_group_defaults = var.eks_managed_node_group_defaults
@@ -246,8 +252,10 @@ module "eks_iam_role" {
   external_secrets_secrets_manager_create_permission = true
   attach_ebs_csi_policy                              = true
   attach_efs_csi_policy                              = true
-  attach_cluster_autoscaler_policy                   = true
 
+  # TODO - it's likely that we don't need these if we use 
+  # EKS managed node groups
+  attach_cluster_autoscaler_policy = true
   cluster_autoscaler_cluster_names = [
     module.eks.cluster_name
   ]
