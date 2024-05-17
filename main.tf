@@ -236,6 +236,13 @@ module "eks" {
       min_size     = obj.min_size
       max_size     = obj.max_size
       desired_size = obj.desired_size
+
+      iam_role_additional_policies = {
+        # Needed by the aws-ebs-csi-driver
+        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+        # Needed by the aws-efs-csi-driver
+        AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+      }
     }
   }
 
