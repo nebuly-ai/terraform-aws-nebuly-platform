@@ -239,7 +239,8 @@ module "eks" {
 
   eks_managed_node_groups = {
     for k, obj in var.eks_managed_node_groups : k => {
-      name = k
+      name   = k
+      labels = obj.labels
 
       instance_types = obj.instance_types
 
