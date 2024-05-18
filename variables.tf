@@ -153,7 +153,8 @@ variable "eks_managed_node_group_defaults" {
     ami_type = string
   })
   default = {
-    ami_type = "AL2_x86_64"
+    ami_type                   = "AL2_x86_64"
+    use_custom_launch_template = false
   }
 }
 variable "eks_managed_node_groups" {
