@@ -153,23 +153,22 @@ variable "eks_managed_node_group_defaults" {
     ami_type = string
   })
   default = {
-    ami_type                   = "AL2_x86_64"
-    use_custom_launch_template = false
+    ami_type = "AL2_x86_64"
   }
 }
 variable "eks_managed_node_groups" {
   description = "The managed node groups of the EKS cluster."
   type = map(object({
-    instance_types = set(string)
-    min_size       = number
-    max_size       = number
-    desired_size   = optional(number)
-    subnet_ids     = optional(list(string), null)
-    ami_type       = optional(string, "AL2_x86_64")
-    disk_size_gb   = optional(number, 128)
-    tags           = optional(map(string), {})
-
-    labels = optional(map(string), {})
+    instance_types             = set(string)
+    min_size                   = number
+    max_size                   = number
+    desired_size               = optional(number)
+    subnet_ids                 = optional(list(string), null)
+    ami_type                   = optional(string, "AL2_x86_64")
+    disk_size_gb               = optional(number, 128)
+    tags                       = optional(map(string), {})
+    use_custom_launch_template = optional(bool, false)
+    labels                     = optional(map(string), {})
     taints = optional(set(object({
       key : string
       value : string
