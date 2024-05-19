@@ -199,6 +199,10 @@ variable "eks_service_accounts" {
   }))
   default = [
     {
+      namespace : "kube-system"
+      name : "cluster-autoscaler"
+    },
+    {
       namespace : "nebuly"
       name : "nebuly"
     },
