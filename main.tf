@@ -245,12 +245,14 @@ module "eks" {
       instance_types = obj.instance_types
       taints         = obj.taints
 
-      min_size     = obj.min_size
-      max_size     = obj.max_size
-      desired_size = obj.desired_size
-      subnet_ids   = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
-      ami_type     = obj.ami_type
-      disk_size    = obj.disk_size_gb
+      min_size                   = obj.min_size
+      max_size                   = obj.max_size
+      desired_size               = obj.desired_size
+      subnet_ids                 = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
+      ami_type                   = obj.ami_type
+      disk_size                  = obj.disk_size_gb
+      use_custom_launch_template = obj.use_custom_launch_template
+
 
       iam_role_additional_policies = {
         # Needed by the aws-ebs-csi-driver
