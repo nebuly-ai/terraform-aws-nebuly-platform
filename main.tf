@@ -258,6 +258,8 @@ module "eks" {
         # Needed by the aws-efs-csi-driver
         AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
       }
+
+      tags = obj.tags
     }
   }
 
