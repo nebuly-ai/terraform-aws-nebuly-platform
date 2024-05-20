@@ -178,15 +178,54 @@ variable "eks_managed_node_groups" {
   default = {
     "workers" : {
       instance_types = ["r5.xlarge"]
-      min_size       = 3
-      max_size       = 3
-      desired_size   = 3
+      min_size       = 1
+      max_size       = 1
+      desired_size   = 1
+    }
+    "gpu-t4" : {
+      instance_types = ["g4dn.xlarge"]
+      ami_type       = "AL2_x86_64_GPU"
+      subnet_ids     = [local.subnet_eu_central_1b]
+      disk_size_gb   = 128
+      min_size       = 1
+      max_size       = 1
+      desired_size   = 1
+
+      labels = {
+        "nvidia.com/gpu.present" : "true",
+        "nebuly.com/accelerator" : "nvidia-tesla-t4",
+      }
+      taints = [
+        {
+          key : "nvidia.com/gpu"
+          value : ""
+          effect : "NO_SCHEDULE"
+        }
+      ]
     }
     "gpu-a100" : {
       instance_types = ["p4d.24xlarge"]
+      ami_type       = "AL2_x86_64_GPU"
       min_size       = 0
       max_size       = 1
       desired_size   = 0
+      subnet_ids     = [local.subnet_eu_central_1b]
+      disk_size_gb   = 128
+
+      labels = {
+        "nvidia.com/gpu.present" : "true",
+        "nebuly.com/accelerator" : "nvidia-ampere-a100",
+      }
+      tags = {
+        "k8s.io/cluster-autoscaler/enabled" : "true",
+      }
+      taints = [
+        {
+          key : "nvidia.com/gpu"
+          value : ""
+          effect : "NO_SCHEDULE"
+        }
+      ]
     }
   }
 }
