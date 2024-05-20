@@ -10,6 +10,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~>3.6"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~>4.0"
+    }
   }
 }
 
@@ -300,6 +304,34 @@ module "eks_iam_role" {
 }
 
 
+### ----------- Auth ----------- ###
+resource "tls_private_key" "auth_jwt" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+resource "aws_secretsmanager_secret" "auth_jwt_key" {
+  # The password of the initial admin user
+  name = format("%s-auth-jwt-key-%s", var.resource_prefix, random_string.secrets_suffix.result)
+}
+resource "aws_secretsmanager_secret_version" "auth_jwt_key" {
+  secret_id     = aws_secretsmanager_secret.auth_jwt_key.id
+  secret_string = tls_private_key.auth_jwt.private_key_pem
+}
+
+resource "random_password" "admin_user_password" {
+  length  = 24
+  special = true
+}
+resource "aws_secretsmanager_secret" "admin_user_password" {
+  # The password of the initial admin user
+  name = format("%s-admin-user-password-%s", var.resource_prefix, random_string.secrets_suffix.result)
+}
+resource "aws_secretsmanager_secret_version" "admin_user_password" {
+  secret_id     = aws_secretsmanager_secret.admin_user_password.id
+  secret_string = random_password.admin_user_password.result
+}
+
+
 
 ### ----------- External secrets ----------- ###
 resource "aws_secretsmanager_secret" "openai_api_key" {
@@ -308,7 +340,6 @@ resource "aws_secretsmanager_secret" "openai_api_key" {
 resource "aws_secretsmanager_secret_version" "openai_api_key" {
   secret_id     = aws_secretsmanager_secret.openai_api_key.id
   secret_string = var.openai_api_key
-
 }
 
 

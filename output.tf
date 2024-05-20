@@ -83,3 +83,14 @@ output "s3_bucket_ai_models" {
   }
 }
 
+
+### ----------- Auth ----------- ###
+output "admin_user_password" {
+  description = "The password of the initial admin user of the platform."
+  value       = random_password.admin_user_password.result
+  sensitive   = true
+}
+output "auth_jwt_key_secret_name" {
+  description = "The name of the secret containing the SSL Key used for generating JWTs."
+  value       = aws_secretsmanager_secret.auth_jwt_key.name
+}
