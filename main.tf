@@ -372,7 +372,6 @@ resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_http" {
 }
 
 
-
 ### ----------- External secrets ----------- ###
 resource "aws_secretsmanager_secret" "openai_api_key" {
   name = format("%s-openai-api-key-%s", var.resource_prefix, random_string.secrets_suffix.result)
