@@ -253,7 +253,7 @@ module "eks" {
       min_size                   = obj.min_size
       max_size                   = obj.max_size
       desired_size               = obj.desired_size
-      subnet_ids                 = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
+      subnet_ids                 = obj.subnet_ids == null ? var.subnet_ids : obj.subjet_ids
       ami_type                   = obj.ami_type
       disk_size                  = obj.disk_size_gb
       use_custom_launch_template = obj.use_custom_launch_template
@@ -337,7 +337,7 @@ resource "aws_secretsmanager_secret_version" "admin_user_password" {
 resource "aws_security_group" "eks_load_balancer" {
   name        = local.eks_load_balancer_name
   description = "Rules for the EKS load balancer."
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = var.vpc_id
 
   # Allow all outbound traffix
   egress {

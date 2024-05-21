@@ -189,7 +189,6 @@ variable "eks_managed_node_groups" {
     "gpu-t4" : {
       instance_types = ["g4dn.xlarge"]
       ami_type       = "AL2_x86_64_GPU"
-      subnet_ids     = [local.subnet_eu_central_1b]
       disk_size_gb   = 128
       min_size       = 1
       max_size       = 1
@@ -213,7 +212,6 @@ variable "eks_managed_node_groups" {
       min_size       = 0
       max_size       = 1
       desired_size   = 0
-      subnet_ids     = [local.subnet_eu_central_1b]
       disk_size_gb   = 128
 
       labels = {

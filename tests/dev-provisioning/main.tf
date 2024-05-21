@@ -68,6 +68,9 @@ module "main" {
       desired_size   = 0
     }
   }
+  allowed_inbound_cidr_blocks = {
+    "test" : "0.0.0.0/0"
+  }
 
   rds_multi_availability_zone_enabled = false
   rds_availability_zone               = var.availability_zones[0]
