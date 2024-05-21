@@ -24,6 +24,7 @@ locals {
   eks_tags = merge(var.tags, {
     "platform.nebuly.com/component" : "eks"
   })
+  eks_load_balancer_name = "${var.resource_prefix}-eks-load-balancer"
 
   rds_instance_name_analytics = "${var.resource_prefix}platformanalytics"
   rds_instance_name_auth      = "${var.resource_prefix}platformauth"
@@ -329,6 +330,45 @@ resource "aws_secretsmanager_secret" "admin_user_password" {
 resource "aws_secretsmanager_secret_version" "admin_user_password" {
   secret_id     = aws_secretsmanager_secret.admin_user_password.id
   secret_string = random_password.admin_user_password.result
+}
+
+
+### ----------- Networking ----------- ###
+resource "aws_security_group" "eks_load_balancer" {
+  name        = local.eks_load_balancer_name
+  description = "Rules for the EKS load balancer."
+  vpc_id      = data.aws_vpc.default.id
+
+  # Allow all outbound traffix
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = local.eks_load_balancer_name
+  }
+}
+resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_https" {
+  for_each = var.allowed_inbound_cidr_blocks
+
+  security_group_id = aws_security_group.eks_load_balancer.id
+  cidr_ipv4         = each.value
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+}
+resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_http" {
+  for_each = var.allowed_inbound_cidr_blocks
+
+  security_group_id = aws_security_group.eks_load_balancer.id
+  cidr_ipv4         = each.value
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
 }
 
 

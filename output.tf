@@ -84,6 +84,13 @@ output "s3_bucket_ai_models" {
 }
 
 
+### ----------- Networking ----------- ###
+output "eks_load_balancer_security_group" {
+  description = "The security group linked with the EKS load balancer."
+  value       = aws_security_group.eks_load_balancer
+}
+
+
 ### ----------- Auth ----------- ###
 output "admin_user_password" {
   description = "The password of the initial admin user of the platform."

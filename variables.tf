@@ -37,6 +37,10 @@ variable "security_group" {
   })
   description = "The security group to use."
 }
+variable "allowed_inbound_cidr_blocks" {
+  description = "The CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic"
+  type        = map(string)
+}
 
 
 ### RDS Postgres ###
