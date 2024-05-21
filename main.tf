@@ -253,7 +253,7 @@ module "eks" {
       min_size                   = obj.min_size
       max_size                   = obj.max_size
       desired_size               = obj.desired_size
-      subnet_ids                 = obj.subnet_ids == null ? var.subnet_ids : obj.subjet_ids
+      subnet_ids                 = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
       ami_type                   = obj.ami_type
       disk_size                  = obj.disk_size_gb
       use_custom_launch_template = obj.use_custom_launch_template
