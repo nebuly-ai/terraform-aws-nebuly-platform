@@ -102,7 +102,7 @@ variable "rds_analytics_storage" {
   default = {
     allocated_gb     = 32
     max_allocated_gb = 128
-    type             = "gp2"
+    type             = "gp3"
   }
 
   validation {
