@@ -18,13 +18,32 @@ terraform {
 }
 
 data "aws_caller_identity" "current" {}
+data "aws_partition" "current" {}
 
 locals {
+  partition = data.aws_partition.current.partition
+
   eks_cluster_name = "${var.resource_prefix}eks"
   eks_tags = merge(var.tags, {
     "platform.nebuly.com/component" : "eks"
   })
   eks_load_balancer_name = "${var.resource_prefix}-eks-load-balancer"
+  eks_cluster_admin_access_entries = {
+    for arn in var.eks_cluster_admin_arns :
+    arn => {
+      principal_arn = arn
+      type          = "STANDARD"
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${local.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
 
   rds_instance_name_analytics = "${var.resource_prefix}platformanalytics"
   rds_instance_name_auth      = "${var.resource_prefix}platformauth"
@@ -221,6 +240,7 @@ module "eks" {
   cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
 
   enable_cluster_creator_admin_permissions = var.eks_enable_cluster_creator_admin_permissions
+  access_entries                           = local.eks_cluster_admin_access_entries
 
   cluster_addons = {
     coredns = {

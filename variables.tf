@@ -252,3 +252,8 @@ variable "eks_service_accounts" {
     },
   ]
 }
+variable "eks_cluster_admin_arns" {
+  description = "List of ARNs that will be granted the role of Cluster Admin over EKS"
+  type        = set(string)
+  default     = []
+}
