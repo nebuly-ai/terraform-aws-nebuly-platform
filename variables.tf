@@ -69,11 +69,6 @@ variable "rds_availability_zone" {
   type        = string
   default     = null
 }
-variable "rds_subnet_ids" {
-  description = "A list of VPC subnet IDs in which the RDS instances will be deployed."
-  type        = list(string)
-  default     = []
-}
 variable "rds_maintenance_window" {
   description = "The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00'."
   type        = string

@@ -89,7 +89,7 @@ module "rds_postgres_analytics" {
   vpc_security_group_ids = [
     var.security_group.id
   ]
-  subnet_ids = var.rds_subnet_ids
+  subnet_ids = var.subnet_ids
 
   maintenance_window              = var.rds_maintenance_window
   backup_window                   = var.rds_backup_window
