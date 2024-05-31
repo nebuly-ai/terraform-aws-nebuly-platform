@@ -62,7 +62,6 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="input_rds_multi_availability_zone_enabled"></a> [rds\_multi\_availability\_zone\_enabled](#input\_rds\_multi\_availability\_zone\_enabled) | If True, provision the RDS instances on multiple availability zones. | `bool` | `true` | no |
 | <a name="input_rds_postgres_family"></a> [rds\_postgres\_family](#input\_rds\_postgres\_family) | The PostgreSQL family to use for the RDS instances. | `string` | `"postgres16"` | no |
 | <a name="input_rds_postgres_version"></a> [rds\_postgres\_version](#input\_rds\_postgres\_version) | The PostgreSQL version to use for the RDS instances. | `string` | `"16"` | no |
-| <a name="input_rds_subnet_ids"></a> [rds\_subnet\_ids](#input\_rds\_subnet\_ids) | A list of VPC subnet IDs in which the RDS instances will be deployed. | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region where to provision the resources. | `string` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | The prefix that will be used for generating resource names. | `string` | n/a | yes |
 | <a name="input_security_group"></a> [security\_group](#input\_security\_group) | The security group to use. | <pre>object({<br>    name = string<br>    id   = string<br>  })</pre> | n/a | yes |
