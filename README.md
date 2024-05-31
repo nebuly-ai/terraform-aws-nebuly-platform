@@ -10,9 +10,9 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~>5.45 |
-| <a name="provider_random"></a> [random](#provider\_random) | ~>3.6 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | ~>4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.51.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.2 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.5 |
 
 
 ## Outputs
@@ -62,6 +62,7 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | <a name="input_rds_multi_availability_zone_enabled"></a> [rds\_multi\_availability\_zone\_enabled](#input\_rds\_multi\_availability\_zone\_enabled) | If True, provision the RDS instances on multiple availability zones. | `bool` | `true` | no |
 | <a name="input_rds_postgres_family"></a> [rds\_postgres\_family](#input\_rds\_postgres\_family) | The PostgreSQL family to use for the RDS instances. | `string` | `"postgres16"` | no |
 | <a name="input_rds_postgres_version"></a> [rds\_postgres\_version](#input\_rds\_postgres\_version) | The PostgreSQL version to use for the RDS instances. | `string` | `"16"` | no |
+| <a name="input_rds_subnet_ids"></a> [rds\_subnet\_ids](#input\_rds\_subnet\_ids) | A list of VPC subnet IDs in which the RDS instances will be deployed. | `list(string)` | `[]` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region where to provision the resources. | `string` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | The prefix that will be used for generating resource names. | `string` | n/a | yes |
 | <a name="input_security_group"></a> [security\_group](#input\_security\_group) | The security group to use. | <pre>object({<br>    name = string<br>    id   = string<br>  })</pre> | n/a | yes |
@@ -72,25 +73,25 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 ## Resources
 
 
-- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#410)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#406)
-- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#346)
-- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#333)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#396)
-- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#131)
-- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#214)
-- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#350)
-- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#337)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#399)
-- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#134)
-- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#217)
-- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#357)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#384)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#375)
-- resource.random_password.admin_user_password (/terraform-docs/main.tf#342)
-- resource.random_password.rds_analytics (/terraform-docs/main.tf#126)
-- resource.random_password.rds_auth (/terraform-docs/main.tf#209)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#411)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#407)
+- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#347)
+- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#334)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#397)
+- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#132)
+- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#215)
+- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#351)
+- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#338)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#400)
+- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#135)
+- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#218)
+- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#358)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#385)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#376)
+- resource.random_password.admin_user_password (/terraform-docs/main.tf#343)
+- resource.random_password.rds_analytics (/terraform-docs/main.tf#127)
+- resource.random_password.rds_auth (/terraform-docs/main.tf#210)
 - resource.random_string.secrets_suffix (/terraform-docs/main.tf#52)
-- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#329)
+- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#330)
 - data source.aws_caller_identity.current (/terraform-docs/main.tf#20)
 - data source.aws_partition.current (/terraform-docs/main.tf#21)
