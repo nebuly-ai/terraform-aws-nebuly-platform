@@ -49,13 +49,6 @@ module "main" {
   eks_kubernetes_version             = "1.28"
   eks_managed_node_groups = {
     "workers" : {
-      taints = [
-        {
-          key : "foo",
-          value : "bar",
-          effect : "NO_SCHEDULE",
-        }
-      ]
       instance_types = ["r5.xlarge"]
       min_size       = 1
       max_size       = 1
@@ -69,7 +62,7 @@ module "main" {
     }
   }
   allowed_inbound_cidr_blocks = {
-    "test" : "0.0.0.0/0"
+    "all" : "0.0.0.0/0"
   }
 
   rds_multi_availability_zone_enabled = false
@@ -92,4 +85,36 @@ module "main" {
   subnet_ids      = data.aws_subnets.default.ids
   resource_prefix = "nbllab"
   openai_api_key  = "test"
+}
+
+
+# ------ Outputs ------ #
+output "eks_iam_role_arn" {
+  description = "The ARN of the EKS IAM role."
+  value       = module.main.eks_iam_role_arn
+}
+output "eks_cluster_get_credentials" {
+  description = "Command for getting the credentials for accessing the Kubernetes Cluster."
+  value       = module.main.eks_cluster_get_credentials
+}
+output "eks_cluster_security_group_id" {
+  description = "Security group ids attached to the cluster control plane."
+  value       = module.main.eks_cluster_security_group_id
+}
+output "secret_names" {
+  value = {
+    "auth_jwt_key" : module.main.auth_jwt_key_secret_name
+    "openai_api_key" : module.main.openai_api_key_secret_name
+    "auth_db" : module.main.auth_db.password_secret_name
+    "analytics_db" : module.main.analytics_db.password_secret_name
+  }
+}
+output "s3_bucket_ai_models" {
+  value = module.main.s3_bucket_ai_models
+}
+output "auth_db" {
+  value = module.main.auth_db
+}
+output "analytics_db" {
+  value = module.main.analytics_db
 }
