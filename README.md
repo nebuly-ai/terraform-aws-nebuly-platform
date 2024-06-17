@@ -42,6 +42,7 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_allowed_inbound_cidr_blocks"></a> [allowed\_inbound\_cidr\_blocks](#input\_allowed\_inbound\_cidr\_blocks) | The CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic | `map(string)` | n/a | yes |
+| <a name="input_eks_cloudwatch_observability_enabled"></a> [eks\_cloudwatch\_observability\_enabled](#input\_eks\_cloudwatch\_observability\_enabled) | If true, install the CloudWatch Observability add-on.<br>  The add-on installs the CloudWatch agent to send infrastructure metrics from the cluster, <br>  installs Fluent Bit to send container logs, and also enables CloudWatch Application Signals <br>  to send application performance telemetry. | `bool` | `false` | no |
 | <a name="input_eks_cluster_admin_arns"></a> [eks\_cluster\_admin\_arns](#input\_eks\_cluster\_admin\_arns) | List of ARNs that will be granted the role of Cluster Admin over EKS | `set(string)` | `[]` | no |
 | <a name="input_eks_cluster_endpoint_public_access"></a> [eks\_cluster\_endpoint\_public\_access](#input\_eks\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | `bool` | n/a | yes |
 | <a name="input_eks_enable_cluster_creator_admin_permissions"></a> [eks\_enable\_cluster\_creator\_admin\_permissions](#input\_eks\_enable\_cluster\_creator\_admin\_permissions) | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry. | `bool` | `true` | no |
@@ -72,25 +73,25 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 ## Resources
 
 
-- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#411)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#407)
-- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#347)
-- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#334)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#397)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#421)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#417)
+- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#357)
+- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#344)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#407)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#132)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#215)
-- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#351)
-- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#338)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#400)
+- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#361)
+- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#348)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#410)
 - resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#135)
 - resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#218)
-- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#358)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#385)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#376)
-- resource.random_password.admin_user_password (/terraform-docs/main.tf#343)
+- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#368)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#395)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#386)
+- resource.random_password.admin_user_password (/terraform-docs/main.tf#353)
 - resource.random_password.rds_analytics (/terraform-docs/main.tf#127)
 - resource.random_password.rds_auth (/terraform-docs/main.tf#210)
 - resource.random_string.secrets_suffix (/terraform-docs/main.tf#52)
-- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#330)
+- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#340)
 - data source.aws_caller_identity.current (/terraform-docs/main.tf#20)
 - data source.aws_partition.current (/terraform-docs/main.tf#21)

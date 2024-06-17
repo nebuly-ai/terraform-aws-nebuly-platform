@@ -150,6 +150,16 @@ variable "eks_enable_cluster_creator_admin_permissions" {
   type        = bool
   default     = true
 }
+variable "eks_cloudwatch_observability_enabled" {
+  description = <<EOT
+  If true, install the CloudWatch Observability add-on.
+  The add-on installs the CloudWatch agent to send infrastructure metrics from the cluster, 
+  installs Fluent Bit to send container logs, and also enables CloudWatch Application Signals 
+  to send application performance telemetry.
+  EOT
+  type        = bool
+  default     = false
+}
 variable "eks_managed_node_group_defaults" {
   description = "The default settings of the EKS managed node groups."
   type = object({

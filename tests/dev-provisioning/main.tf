@@ -1,4 +1,20 @@
-### Variables ###
+# ----------- Terraform setup ----------- #
+terraform {
+  required_version = ">1.8"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~>5.45"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~>3.2"
+    }
+  }
+}
+
+
+# ------ Variables ------ #
 variable "aws_access_key" {
   type = string
 }
@@ -14,7 +30,8 @@ variable "availability_zones" {
   default = ["us-east-1a", "us-east-1b"]
 }
 
-### Data Sources ###
+
+# ------ Data Sources ------ #
 data "aws_vpc" "default" {
   default = true
 }
@@ -40,13 +57,36 @@ provider "aws" {
   secret_key = var.aws_secret_key
   region     = var.region
 }
+
+
+# ----------- Allow traffic within the deafult VPC ----------- #
+resource "aws_security_group_rule" "allow_all_inbound_within_vpc" {
+  type        = "ingress"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1" # -1 means all protocols
+  cidr_blocks = [data.aws_vpc.default.cidr_block]
+
+  security_group_id = data.aws_security_group.default.id
+}
+resource "aws_security_group_rule" "allow_all_outbound_within_vpc" {
+  type        = "egress"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1" # -1 means all protocols
+  cidr_blocks = [data.aws_vpc.default.cidr_block]
+
+  security_group_id = data.aws_security_group.default.id
+}
+
 module "main" {
   source = "../../"
 
   security_group = data.aws_security_group.default
 
-  eks_cluster_endpoint_public_access = true
-  eks_kubernetes_version             = "1.28"
+  eks_cloudwatch_observability_enabled = true
+  eks_cluster_endpoint_public_access   = true
+  eks_kubernetes_version               = "1.28"
   eks_managed_node_groups = {
     "workers" : {
       instance_types = ["r5.xlarge"]

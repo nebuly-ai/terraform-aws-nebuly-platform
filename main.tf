@@ -227,23 +227,8 @@ resource "aws_secretsmanager_secret_version" "rds_auth_password" {
 
 
 ### ----------- EKS ----------- ###
-module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~>20.8.5"
-
-  cluster_name    = local.eks_cluster_name
-  cluster_version = var.eks_kubernetes_version
-
-  vpc_id                   = var.vpc_id
-  subnet_ids               = var.subnet_ids
-  control_plane_subnet_ids = var.subnet_ids
-
-  cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
-
-  enable_cluster_creator_admin_permissions = var.eks_enable_cluster_creator_admin_permissions
-  access_entries                           = local.eks_cluster_admin_access_entries
-
-  cluster_addons = {
+locals {
+  base_cluster_addons = {
     coredns = {
       most_recent = true
     }
@@ -260,6 +245,31 @@ module "eks" {
       most_recent = true
     }
   }
+}
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~>20.8.5"
+
+  cluster_name    = local.eks_cluster_name
+  cluster_version = var.eks_kubernetes_version
+
+  vpc_id                   = var.vpc_id
+  subnet_ids               = var.subnet_ids
+  control_plane_subnet_ids = var.subnet_ids
+
+  cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
+
+  enable_cluster_creator_admin_permissions = var.eks_enable_cluster_creator_admin_permissions
+  access_entries                           = local.eks_cluster_admin_access_entries
+
+  cluster_addons = merge(
+    local.base_cluster_addons,
+    var.eks_cloudwatch_observability_enabled == true ? {
+      amazon-cloudwatch-observability = {
+        most_recent = true
+      }
+    } : {}
+  )
 
   eks_managed_node_group_defaults = var.eks_managed_node_group_defaults
 
@@ -410,6 +420,6 @@ resource "aws_s3_bucket" "ai_models" {
 }
 resource "aws_iam_role_policy_attachment" "ai_models__eks_reader" {
   role       = module.eks_iam_role.iam_role_name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess" # Attach the read-only S3 access policy
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Attach the read-only S3 access policy
 }
 
