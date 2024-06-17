@@ -249,6 +249,10 @@ variable "eks_service_accounts" {
   default = [
     {
       namespace : "kube-system"
+      name : "aws-load-balancer-controller"
+    },
+    {
+      namespace : "kube-system"
       name : "cluster-autoscaler"
     },
     {
