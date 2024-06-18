@@ -315,9 +315,9 @@ module "eks_iam_role" {
   attach_external_secrets_policy                     = true
   external_secrets_secrets_manager_create_permission = true
   attach_cloudwatch_observability_policy             = true
-  attach_load_balancer_controller_policy             = false
   attach_ebs_csi_policy                              = true
   attach_efs_csi_policy                              = true
+  attach_load_balancer_controller_policy             = false
 
   # TODO - it's likely that we don't need these if we use 
   # EKS managed node groups
