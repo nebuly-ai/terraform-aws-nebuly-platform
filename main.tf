@@ -295,6 +295,8 @@ module "eks" {
         AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
         # Needed by the aws-efs-csi-driver
         AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+        # Needed by CloudWatch agent
+        CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
       }
 
       tags = obj.tags
@@ -313,7 +315,7 @@ module "eks_iam_role" {
   attach_external_secrets_policy                     = true
   external_secrets_secrets_manager_create_permission = true
   attach_cloudwatch_observability_policy             = true
-  attach_load_balancer_controller_policy             = true
+  attach_load_balancer_controller_policy             = false
   attach_ebs_csi_policy                              = true
   attach_efs_csi_policy                              = true
 
