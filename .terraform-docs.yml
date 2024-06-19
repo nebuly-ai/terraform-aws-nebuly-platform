@@ -22,7 +22,7 @@ content: |-
 
   ## Examples
 
-  ### Basic udage
+  ### Basic usage
   ```hcl
   {{ include "examples/basic/main.tf" }}
   ```

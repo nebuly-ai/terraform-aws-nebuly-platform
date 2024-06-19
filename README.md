@@ -6,7 +6,7 @@ Available on [Terraform Registry](https://registry.terraform.io/modules/nebuly-a
 
 ## Examples
 
-### Basic udage
+### Basic usage
 ```hcl
 # ------ Variables ------ #
 variable "aws_access_key" {
