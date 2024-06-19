@@ -1,4 +1,4 @@
-formatter: "" # this is required
+formatter: "markdown" # this is required
 
 version: ""
 
@@ -19,6 +19,13 @@ content: |-
   Terraform module for provisioning Nebuly Platform resources on AWS.
 
   Available on [Terraform Registry](https://registry.terraform.io/modules/nebuly-ai/nebuly-platform/aws/latest).
+
+  ## Example
+
+  ```hcl
+  {{ include "examples/usage/main.tf" }}
+  ```
+
 
   {{ .Header }}
 
