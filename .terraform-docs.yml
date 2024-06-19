@@ -18,14 +18,7 @@ content: |-
 
   Terraform module for provisioning Nebuly Platform resources on AWS.
 
-
-  ```hcl
-  module "nebuly-platform" {
-      source = "github.com/nebuly-ai/terraform-aws-nebuly-platform"
-      ref    = "v0.2.7"
-      # insert required variables here
-  }
-  ```
+  Available on [Terraform Registry](https://registry.terraform.io/modules/nebuly-ai/nebuly-platform/aws/latest).
 
   {{ .Header }}
 
