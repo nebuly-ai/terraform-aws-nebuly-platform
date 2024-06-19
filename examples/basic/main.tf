@@ -51,7 +51,7 @@ data "aws_security_group" "default" {
 # ------ Main ------ #
 module "main" {
   source  = "nebuly-ai/nebuly-platform/aws"
-  version = "0.2.8"
+  version = "0.2.10"
 
   security_group = data.aws_security_group.default
 

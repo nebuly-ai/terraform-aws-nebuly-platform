@@ -20,8 +20,9 @@ content: |-
 
   Available on [Terraform Registry](https://registry.terraform.io/modules/nebuly-ai/nebuly-platform/aws/latest).
 
-  ## Example
+  ## Examples
 
+  ### Basic udage
   ```hcl
   {{ include "examples/usage/main.tf" }}
   ```
