@@ -24,7 +24,7 @@ content: |-
 
   ### Basic udage
   ```hcl
-  {{ include "examples/usage/main.tf" }}
+  {{ include "examples/basic/main.tf" }}
   ```
 
 
