@@ -180,6 +180,7 @@ module "rds_postgres_auth" {
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
   create_cloudwatch_log_group     = true
   create_db_subnet_group          = var.rds_create_db_subnet_group
+  subnet_ids                      = var.subnet_ids
 
   backup_retention_period = var.rds_backup_retention_period
   skip_final_snapshot     = true
