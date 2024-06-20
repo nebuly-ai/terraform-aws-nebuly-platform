@@ -83,8 +83,9 @@ module "rds_postgres_analytics" {
   manage_master_user_password_rotation    = false
   master_user_password_rotate_immediately = false
 
-  multi_az          = var.rds_multi_availability_zone_enabled
-  availability_zone = var.rds_availability_zone
+  create_db_subnet_group = var.rds_create_db_subnet_group
+  multi_az               = var.rds_multi_availability_zone_enabled
+  availability_zone      = var.rds_availability_zone
 
   vpc_security_group_ids = [
     var.security_group.id
@@ -178,6 +179,7 @@ module "rds_postgres_auth" {
   backup_window                   = var.rds_backup_window
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
   create_cloudwatch_log_group     = true
+  create_db_subnet_group          = var.rds_create_db_subnet_group
 
   backup_retention_period = var.rds_backup_retention_period
   skip_final_snapshot     = true

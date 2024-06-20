@@ -84,6 +84,10 @@ variable "rds_backup_retention_period" {
   type        = number
   default     = 14
 }
+variable "rds_create_db_subnet_group" {
+  type    = bool
+  default = true
+}
 variable "rds_analytics_instance_type" {
   description = "The instance type of the RDS instance hosting the analytics DB."
   type        = string
