@@ -116,7 +116,7 @@ variable "rds_analytics_storage" {
 variable "rds_auth_instance_type" {
   description = "The instance type of the RDS instance hosting the auth DB."
   type        = string
-  default     = "t4g.small"
+  default     = "db.t4g.small"
 }
 variable "rds_auth_storage" {
   description = "Storage settings of the auth DB."
@@ -219,8 +219,8 @@ variable "eks_managed_node_groups" {
         }
       ]
     }
-    "gpu-a100" : {
-      instance_types = ["p4d.24xlarge"]
+    "gpu-a10" : {
+      instance_types = ["g5.12xlarge"]
       ami_type       = "AL2_x86_64_GPU"
       min_size       = 0
       max_size       = 1
@@ -229,7 +229,7 @@ variable "eks_managed_node_groups" {
 
       labels = {
         "nvidia.com/gpu.present" : "true",
-        "nebuly.com/accelerator" : "nvidia-ampere-a100",
+        "nebuly.com/accelerator" : "nvidia-ampere-a10",
       }
       tags = {
         "k8s.io/cluster-autoscaler/enabled" : "true",

@@ -119,6 +119,7 @@ module "main" {
     max_allocated_gb = 20
     type             = "gp2"
   }
+  rds_create_db_subnet_group = true
 
   vpc_id          = data.aws_vpc.default.id
   region          = var.region
