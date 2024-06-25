@@ -1,6 +1,5 @@
 terraform {
   required_version = ">= 1.0"
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -20,8 +19,17 @@ terraform {
 data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
 
+resource "random_string" "secrets_suffix" {
+  lower   = true
+  length  = 6
+  special = false
+}
+
 locals {
   partition = data.aws_partition.current.partition
+
+  secrets_suffix     = var.secrets_suffix == null ? random_string.secrets_suffix.result : var.secrets_suffix
+  use_secrets_suffix = length(local.secrets_suffix) > 0
 
   eks_cluster_name = "${var.resource_prefix}eks"
   eks_tags = merge(var.tags, {
@@ -47,12 +55,6 @@ locals {
 
   rds_instance_name_analytics = "${var.resource_prefix}platformanalytics"
   rds_instance_name_auth      = "${var.resource_prefix}platformauth"
-}
-
-resource "random_string" "secrets_suffix" {
-  lower   = true
-  length  = 6
-  special = false
 }
 
 
@@ -131,7 +133,11 @@ resource "random_password" "rds_analytics" {
   override_special = "!#%&*()-_=+[]{}<>?"
 }
 resource "aws_secretsmanager_secret" "rds_analytics_credentials" {
-  name = format("%s-rds-analytics-credentials-%s", var.resource_prefix, random_string.secrets_suffix.result)
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-rds-analytics-credentials-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-rds-analytics-credentials", var.resource_prefix)
+  )
 }
 resource "aws_secretsmanager_secret_version" "rds_analytics_password" {
   secret_id = aws_secretsmanager_secret.rds_analytics_credentials.id
@@ -216,7 +222,11 @@ resource "random_password" "rds_auth" {
   override_special = "!#%&*()-_=+[]{}<>?"
 }
 resource "aws_secretsmanager_secret" "rds_auth_credentials" {
-  name = format("%s-rds-auth-credentials-%s", var.resource_prefix, random_string.secrets_suffix.result)
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-rds-auth-credentials-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-rds-auth-credentials", var.resource_prefix)
+  )
 }
 resource "aws_secretsmanager_secret_version" "rds_auth_password" {
   secret_id = aws_secretsmanager_secret.rds_auth_credentials.id
@@ -350,7 +360,11 @@ resource "tls_private_key" "auth_jwt" {
 }
 resource "aws_secretsmanager_secret" "auth_jwt_key" {
   # The password of the initial admin user
-  name = format("%s-auth-jwt-key-%s", var.resource_prefix, random_string.secrets_suffix.result)
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-auth-jwt-key-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-auth-jwt-key", var.resource_prefix)
+  )
 }
 resource "aws_secretsmanager_secret_version" "auth_jwt_key" {
   secret_id     = aws_secretsmanager_secret.auth_jwt_key.id
@@ -363,7 +377,11 @@ resource "random_password" "admin_user_password" {
 }
 resource "aws_secretsmanager_secret" "admin_user_password" {
   # The password of the initial admin user
-  name = format("%s-admin-user-password-%s", var.resource_prefix, random_string.secrets_suffix.result)
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-admin-user-password-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-admin-user-password", var.resource_prefix)
+  )
 }
 resource "aws_secretsmanager_secret_version" "admin_user_password" {
   secret_id     = aws_secretsmanager_secret.admin_user_password.id
@@ -412,7 +430,11 @@ resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_http" {
 
 ### ----------- External secrets ----------- ###
 resource "aws_secretsmanager_secret" "openai_api_key" {
-  name = format("%s-openai-api-key-%s", var.resource_prefix, random_string.secrets_suffix.result)
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-openai-api-key-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-openai-api-key", var.resource_prefix)
+  )
 }
 resource "aws_secretsmanager_secret_version" "openai_api_key" {
   secret_id     = aws_secretsmanager_secret.openai_api_key.id

@@ -12,6 +12,17 @@ variable "region" {
   type        = string
   description = "The region where to provision the resources."
 }
+variable "secrets_suffix" {
+  type        = string
+  description = <<EOT
+  The suffix that will be appended to the secrets created in AWS Secrets Store. Useful to avoid 
+  name collisions. 
+
+  If null, an auto-generated random suffix will be used.
+  If empty string, no suffix will be used.
+  EOT
+  default     = null
+}
 
 
 ### External credentials ###

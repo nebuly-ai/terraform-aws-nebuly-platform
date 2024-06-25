@@ -146,6 +146,7 @@ module "main" {
 | <a name="input_rds_postgres_version"></a> [rds\_postgres\_version](#input\_rds\_postgres\_version) | The PostgreSQL version to use for the RDS instances. | `string` | `"16"` | no |
 | <a name="input_region"></a> [region](#input\_region) | The region where to provision the resources. | `string` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | The prefix that will be used for generating resource names. | `string` | n/a | yes |
+| <a name="input_secrets_suffix"></a> [secrets\_suffix](#input\_secrets\_suffix) | The suffix that will be appended to the secrets created in AWS Secrets Store. Useful to avoid <br>  name collisions. <br><br>  If null, an auto-generated random suffix will be used.<br>  If empty string, no suffix will be used. | `string` | `null` | no |
 | <a name="input_security_group"></a> [security\_group](#input\_security\_group) | The security group to use. | <pre>object({<br>    name = string<br>    id   = string<br>  })</pre> | n/a | yes |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | The IDs of the subnets to attach to the Platform resources. | `set(string)` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Common tags that will be applied to all resources. | `map(string)` | `{}` | no |
@@ -154,25 +155,25 @@ module "main" {
 ## Resources
 
 
-- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#428)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#424)
-- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#364)
-- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#351)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#414)
-- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#133)
-- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#218)
-- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#368)
-- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#355)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#417)
-- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#136)
-- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#221)
-- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#375)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#402)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#393)
-- resource.random_password.admin_user_password (/terraform-docs/main.tf#360)
-- resource.random_password.rds_analytics (/terraform-docs/main.tf#128)
-- resource.random_password.rds_auth (/terraform-docs/main.tf#213)
-- resource.random_string.secrets_suffix (/terraform-docs/main.tf#52)
-- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#347)
-- data source.aws_caller_identity.current (/terraform-docs/main.tf#20)
-- data source.aws_partition.current (/terraform-docs/main.tf#21)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#450)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#446)
+- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#378)
+- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#361)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#432)
+- resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#135)
+- resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#224)
+- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#386)
+- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#369)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#439)
+- resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#142)
+- resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#231)
+- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#393)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#420)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#411)
+- resource.random_password.admin_user_password (/terraform-docs/main.tf#374)
+- resource.random_password.rds_analytics (/terraform-docs/main.tf#130)
+- resource.random_password.rds_auth (/terraform-docs/main.tf#219)
+- resource.random_string.secrets_suffix (/terraform-docs/main.tf#22)
+- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#357)
+- data source.aws_caller_identity.current (/terraform-docs/main.tf#19)
+- data source.aws_partition.current (/terraform-docs/main.tf#20)
