@@ -105,6 +105,8 @@ module "main" {
     "all" : "0.0.0.0/0"
   }
 
+  secrets_suffix = null
+
   rds_multi_availability_zone_enabled = false
   rds_availability_zone               = var.availability_zones[0]
   rds_analytics_instance_type         = "db.t4g.micro"

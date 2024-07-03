@@ -332,8 +332,6 @@ module "eks_iam_role" {
   attach_efs_csi_policy                              = true
   attach_load_balancer_controller_policy             = true
 
-  # TODO - it's likely that we don't need these if we use 
-  # EKS managed node groups
   attach_cluster_autoscaler_policy = true
   cluster_autoscaler_cluster_names = [
     module.eks.cluster_name

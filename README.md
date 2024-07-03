@@ -129,7 +129,7 @@ module "main" {
 | <a name="input_eks_kubernetes_version"></a> [eks\_kubernetes\_version](#input\_eks\_kubernetes\_version) | Specify which Kubernetes release to use. | `string` | n/a | yes |
 | <a name="input_eks_managed_node_group_defaults"></a> [eks\_managed\_node\_group\_defaults](#input\_eks\_managed\_node\_group\_defaults) | The default settings of the EKS managed node groups. | <pre>object({<br>    ami_type = string<br>  })</pre> | <pre>{<br>  "ami_type": "AL2_x86_64"<br>}</pre> | no |
 | <a name="input_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#input\_eks\_managed\_node\_groups) | The managed node groups of the EKS cluster. | <pre>map(object({<br>    instance_types             = set(string)<br>    min_size                   = number<br>    max_size                   = number<br>    desired_size               = optional(number)<br>    subnet_ids                 = optional(list(string), null)<br>    ami_type                   = optional(string, "AL2_x86_64")<br>    disk_size_gb               = optional(number, 128)<br>    tags                       = optional(map(string), {})<br>    use_custom_launch_template = optional(bool, false)<br>    labels                     = optional(map(string), {})<br>    taints = optional(set(object({<br>      key : string<br>      value : string<br>      effect : string<br>    })), [])<br>  }))</pre> | <pre>{<br>  "gpu-a10": {<br>    "ami_type": "AL2_x86_64_GPU",<br>    "desired_size": 0,<br>    "disk_size_gb": 128,<br>    "instance_types": [<br>      "g5.12xlarge"<br>    ],<br>    "labels": {<br>      "nebuly.com/accelerator": "nvidia-ampere-a10",<br>      "nvidia.com/gpu.present": "true"<br>    },<br>    "max_size": 1,<br>    "min_size": 0,<br>    "tags": {<br>      "k8s.io/cluster-autoscaler/enabled": "true"<br>    },<br>    "taints": [<br>      {<br>        "effect": "NO_SCHEDULE",<br>        "key": "nvidia.com/gpu",<br>        "value": ""<br>      }<br>    ]<br>  },<br>  "gpu-t4": {<br>    "ami_type": "AL2_x86_64_GPU",<br>    "desired_size": 1,<br>    "disk_size_gb": 128,<br>    "instance_types": [<br>      "g4dn.xlarge"<br>    ],<br>    "labels": {<br>      "nebuly.com/accelerator": "nvidia-tesla-t4",<br>      "nvidia.com/gpu.present": "true"<br>    },<br>    "max_size": 1,<br>    "min_size": 1,<br>    "taints": [<br>      {<br>        "effect": "NO_SCHEDULE",<br>        "key": "nvidia.com/gpu",<br>        "value": ""<br>      }<br>    ]<br>  },<br>  "workers": {<br>    "desired_size": 1,<br>    "instance_types": [<br>      "r5.xlarge"<br>    ],<br>    "max_size": 1,<br>    "min_size": 1<br>  }<br>}</pre> | no |
-| <a name="input_eks_service_accounts"></a> [eks\_service\_accounts](#input\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. | <pre>list(object({<br>    name : string<br>    namespace : string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "aws-load-balancer-controller",<br>    "namespace": "kube-system"<br>  },<br>  {<br>    "name": "cluster-autoscaler",<br>    "namespace": "kube-system"<br>  },<br>  {<br>    "name": "nebuly",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "nebuly",<br>    "namespace": "default"<br>  }<br>]</pre> | no |
+| <a name="input_eks_service_accounts"></a> [eks\_service\_accounts](#input\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. | <pre>list(object({<br>    name : string<br>    namespace : string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "aws-load-balancer-controller",<br>    "namespace": "kube-system"<br>  },<br>  {<br>    "name": "cluster-autoscaler",<br>    "namespace": "kube-system"<br>  },<br>  {<br>    "name": "cluster-autoscaler",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "aws-load-balancer-controller",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "nebuly",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "nebuly",<br>    "namespace": "default"<br>  }<br>]</pre> | no |
 | <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | The API Key used for authenticating with OpenAI. | `string` | n/a | yes |
 | <a name="input_rds_analytics_instance_type"></a> [rds\_analytics\_instance\_type](#input\_rds\_analytics\_instance\_type) | The instance type of the RDS instance hosting the analytics DB. | `string` | `"db.m7g.xlarge"` | no |
 | <a name="input_rds_analytics_storage"></a> [rds\_analytics\_storage](#input\_rds\_analytics\_storage) | Storage settings of the analytics DB. | <pre>object({<br>    allocated_gb : number<br>    max_allocated_gb : number<br>    type : string<br>    iops : optional(number, null)<br>  })</pre> | <pre>{<br>  "allocated_gb": 32,<br>  "max_allocated_gb": 128,<br>  "type": "gp3"<br>}</pre> | no |
@@ -155,25 +155,25 @@ module "main" {
 ## Resources
 
 
-- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#450)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#446)
-- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#378)
-- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#361)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#432)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#448)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#444)
+- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#376)
+- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#359)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#430)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#135)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#224)
-- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#386)
-- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#369)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#439)
+- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#384)
+- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#367)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#437)
 - resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#142)
 - resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#231)
-- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#393)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#420)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#411)
-- resource.random_password.admin_user_password (/terraform-docs/main.tf#374)
+- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#391)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#418)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#409)
+- resource.random_password.admin_user_password (/terraform-docs/main.tf#372)
 - resource.random_password.rds_analytics (/terraform-docs/main.tf#130)
 - resource.random_password.rds_auth (/terraform-docs/main.tf#219)
 - resource.random_string.secrets_suffix (/terraform-docs/main.tf#22)
-- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#357)
+- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#355)
 - data source.aws_caller_identity.current (/terraform-docs/main.tf#19)
 - data source.aws_partition.current (/terraform-docs/main.tf#20)
