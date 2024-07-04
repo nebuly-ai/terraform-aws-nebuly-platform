@@ -195,7 +195,7 @@ variable "eks_managed_node_groups" {
     ami_type                   = optional(string, "AL2_x86_64")
     disk_size_gb               = optional(number, 128)
     tags                       = optional(map(string), {})
-    use_custom_launch_template = optional(bool, false)
+    use_custom_launch_template = optional(bool, true)
     labels                     = optional(map(string), {})
     taints = optional(set(object({
       key : string
