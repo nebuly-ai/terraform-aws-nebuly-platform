@@ -101,7 +101,7 @@ module "rds_postgres_analytics" {
 
   backup_retention_period = var.rds_backup_retention_period
   skip_final_snapshot     = true
-  deletion_protection     = false
+  deletion_protection     = var.rds_deletion_protection
 
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
@@ -190,7 +190,7 @@ module "rds_postgres_auth" {
 
   backup_retention_period = var.rds_backup_retention_period
   skip_final_snapshot     = true
-  deletion_protection     = false
+  deletion_protection     = var.rds_deletion_protection
 
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
