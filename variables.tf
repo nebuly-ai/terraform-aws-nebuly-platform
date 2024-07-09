@@ -188,8 +188,8 @@ variable "eks_cloudwatch_observability_enabled" {
 variable "eks_managed_node_group_defaults" {
   description = "The default settings of the EKS managed node groups."
   type = object({
-    ami_type = string
-    ##block_device_mappings = map(any)
+    ami_type              = string
+    block_device_mappings = map(any)
   })
   default = {
     ami_type = "AL2_x86_64"
