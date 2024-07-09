@@ -18,6 +18,11 @@ terraform {
 
 data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
+data "aws_subnet" "subnets" {
+  for_each = var.subnet_ids
+
+  id = each.value
+}
 
 resource "random_string" "secrets_suffix" {
   lower   = true
@@ -389,6 +394,7 @@ resource "aws_secretsmanager_secret_version" "admin_user_password" {
 }
 
 
+
 ### ----------- Networking ----------- ###
 resource "aws_security_group" "eks_load_balancer" {
   name        = local.eks_load_balancer_name
@@ -426,6 +432,31 @@ resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_http" {
   ip_protocol       = "tcp"
   to_port           = 80
 }
+
+# --- optionally configure security group rules ---- #
+resource "aws_security_group_rule" "allow_all_inbound_within_vpc" {
+  count = var.create_security_group_rules ? 1 : 0
+
+  type        = "ingress"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1" # -1 means all protocols
+  cidr_blocks = [for k, v in data.aws_subnet.subnets : v.cidr_block]
+
+  security_group_id = var.security_group.id
+}
+resource "aws_security_group_rule" "allow_all_outbound_within_vpc" {
+  count = var.create_security_group_rules ? 1 : 0
+
+  type        = "egress"
+  from_port   = 0
+  to_port     = 0
+  protocol    = "-1" # -1 means all protocols
+  cidr_blocks = [for k, v in data.aws_subnet.subnets : v.cidr_block]
+
+  security_group_id = var.security_group.id
+}
+
 
 
 ### ----------- External secrets ----------- ###

@@ -52,6 +52,11 @@ variable "allowed_inbound_cidr_blocks" {
   description = "The CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic"
   type        = map(string)
 }
+variable "create_security_group_rules" {
+  description = "If True, add to the specified security group the rules required for allowing connectivity between the provisioned services among all the specified subnets."
+  type        = bool
+  default     = false
+}
 
 
 ### RDS Postgres ###

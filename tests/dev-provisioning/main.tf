@@ -59,26 +59,6 @@ provider "aws" {
 }
 
 
-# ----------- Allow traffic within the deafult VPC ----------- #
-resource "aws_security_group_rule" "allow_all_inbound_within_vpc" {
-  type        = "ingress"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1" # -1 means all protocols
-  cidr_blocks = [data.aws_vpc.default.cidr_block]
-
-  security_group_id = data.aws_security_group.default.id
-}
-resource "aws_security_group_rule" "allow_all_outbound_within_vpc" {
-  type        = "egress"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1" # -1 means all protocols
-  cidr_blocks = [data.aws_vpc.default.cidr_block]
-
-  security_group_id = data.aws_security_group.default.id
-}
-
 module "main" {
   source = "../../"
 
@@ -108,6 +88,7 @@ module "main" {
   secrets_suffix = null
 
   rds_multi_availability_zone_enabled = false
+  rds_deletion_protection             = false
   rds_availability_zone               = var.availability_zones[0]
   rds_analytics_instance_type         = "db.t4g.micro"
   rds_analytics_storage = {
@@ -123,11 +104,12 @@ module "main" {
   }
   rds_create_db_subnet_group = true
 
-  vpc_id          = data.aws_vpc.default.id
-  region          = var.region
-  subnet_ids      = data.aws_subnets.default.ids
-  resource_prefix = "nbllab"
-  openai_api_key  = "test"
+  create_security_group_rules = true
+  vpc_id                      = data.aws_vpc.default.id
+  region                      = var.region
+  subnet_ids                  = data.aws_subnets.default.ids
+  resource_prefix             = "nbllab"
+  openai_api_key              = "test"
 }
 
 
