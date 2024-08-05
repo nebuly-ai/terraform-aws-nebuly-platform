@@ -104,9 +104,9 @@ module "main" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.51.1 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.2 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.5 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~>5.45 |
+| <a name="provider_random"></a> [random](#provider\_random) | ~>3.6 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | ~>4.0 |
 
 
 ## Outputs
