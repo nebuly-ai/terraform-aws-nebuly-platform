@@ -271,7 +271,7 @@ variable "eks_managed_node_groups" {
       instance_types = ["g4dn.xlarge"]
       ami_type       = "AL2_x86_64_GPU"
       disk_size_gb   = 128
-      min_size       = 1
+      min_size       = 0
       max_size       = 1
       desired_size   = 1
 
