@@ -518,35 +518,36 @@ locals {
   k8s_secret_key_nebuly_client_id      = "nebuly-azure-client-id"
   k8s_secret_key_nebuly_client_secret  = "nebuly-azure-client-secret"
 
-  #  helm_values = templatefile(
-  #    "${path.module}/templates/helm-values.tpl.yaml",
-  #    {
-  #      platform_domain        = var.platform_domain
-  #      image_pull_secret_name = var.k8s_image_pull_secret_name
-  #
-  #      openai_endpoint               = azurerm_cognitive_account.main.endpoint
-  #      openai_frustration_deployment = azurerm_cognitive_deployment.gpt_4_turbo.name
-  #
-  #      secret_provider_class_name        = local.secret_provider_class_name
-  #      secret_provider_class_secret_name = local.secret_provider_class_secret_name
-  #
-  #      k8s_secret_key_db_username          = local.k8s_secret_key_db_username
-  #      k8s_secret_key_db_password          = local.k8s_secret_key_db_password
-  #      k8s_secret_key_jwt_signing_key      = local.k8s_secret_key_jwt_signing_key
-  #      k8s_secret_key_openai_api_key       = local.k8s_secret_key_openai_api_key
-  #      k8s_secret_key_nebuly_client_secret = local.k8s_secret_key_nebuly_client_secret
-  #      k8s_secret_key_nebuly_client_id     = local.k8s_secret_key_nebuly_client_id
-  #
-  #      postgres_server_url              = azurerm_postgresql_flexible_server.main.fqdn
-  #      postgres_auth_database_name      = azurerm_postgresql_flexible_server_database.auth.name
-  #      postgres_analytics_database_name = azurerm_postgresql_flexible_server_database.analytics.name
-  #
-  #      kubelet_identity_client_id = module.aks.kubelet_identity[0].client_id
-  #      storage_account_name       = azurerm_storage_account.main.name
-  #      storage_container_name     = azurerm_storage_container.models.name
-  #      tenant_id                  = data.azurerm_client_config.current.tenant_id
-  #    },
-  #  )
+  helm_values = templatefile(
+    "${path.module}/templates/helm-values.tpl.yaml",
+    {
+      platform_domain        = var.platform_domain
+      image_pull_secret_name = var.k8s_image_pull_secret_name
+
+      openai_endpoint               = var.openai_endpoint
+      openai_frustration_deployment = var.openai_gpt4_deployment_name
+
+      secret_provider_class_name        = local.secret_provider_class_name
+      secret_provider_class_secret_name = local.secret_provider_class_secret_name
+
+      k8s_secret_key_analytics_db_username = local.k8s_secret_key_analytics_db_username
+      k8s_secret_key_analytics_db_password = local.k8s_secret_key_analytics_db_password
+      k8s_secret_key_auth_db_username      = local.k8s_secret_key_auth_db_username
+      k8s_secret_key_auth_db_password      = local.k8s_secret_key_auth_db_password
+
+      k8s_secret_key_jwt_signing_key      = local.k8s_secret_key_jwt_signing_key
+      k8s_secret_key_openai_api_key       = local.k8s_secret_key_openai_api_key
+      k8s_secret_key_nebuly_client_secret = local.k8s_secret_key_nebuly_client_secret
+      k8s_secret_key_nebuly_client_id     = local.k8s_secret_key_nebuly_client_id
+
+      s3_bucket_name = aws_s3_bucket.ai_models.bucket
+
+      analytics_postgres_server_url = module.rds_postgres_analytics.db_instance_address
+      analytics_postgres_db_name    = "analytics"
+      auth_postgres_server_url      = module.rds_postgres_auth.db_instance_address
+      auth_postgres_db_name         = "auth"
+    },
+  )
   secret_provider_class = templatefile(
     "${path.module}/templates/secret-provider-class.tpl.yaml",
     {

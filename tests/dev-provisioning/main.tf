@@ -115,9 +115,13 @@ module "main" {
   region                      = var.region
   subnet_ids                  = data.aws_subnets.default.ids
   resource_prefix             = "nbllab"
+
+  openai_gpt4_deployment_name = "gpt-4"
+  openai_endpoint             = "https://test.nebuly.com"
   openai_api_key              = "test"
 
-  nebuly_credentials = var.nebuly_credentials
+  nebuly_credentials          = var.nebuly_credentials
+  platform_domain             = "platform.azure.testing.nebuly.com"
 }
 
 

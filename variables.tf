@@ -23,12 +23,28 @@ variable "secrets_suffix" {
   EOT
   default     = null
 }
+variable "platform_domain" {
+  type        = string
+  description = "The domain on which the deployed Nebuly platform is made accessible."
+  validation {
+    condition     = can(regex("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]", var.platform_domain))
+    error_message = "The domain name must be a valid domain (e.g., example.com)."
+  }
+}
 
 
 ### External credentials ###
 variable "openai_api_key" {
   description = "The API Key used for authenticating with OpenAI."
   type        = string
+}
+variable "openai_endpoint" {
+  description = "The endpoint of the OpenAI API."
+  type = string
+}
+variable "openai_gpt4_deployment_name" {
+  description = "The name of the deployment to use for the GPT-4 model."
+  type = string
 }
 variable "nebuly_credentials" {
   type = object({
@@ -39,6 +55,17 @@ variable "nebuly_credentials" {
   The credentials provided by Nebuly are required for activating your platform installation. 
   If you haven't received your credentials or have lost them, please contact support@nebuly.ai.
   EOT
+}
+
+
+# ------ Kubernetes ------ #
+variable "k8s_image_pull_secret_name" {
+  default     = "nebuly-docker-pull"
+  description = <<EOT
+  The name of the Kubernetes Image Pull Secret to use. 
+  This value will be used to auto-generate the values.yaml file for installing the Nebuly Platform Helm chart.
+  EOT
+  type        = string
 }
 
 

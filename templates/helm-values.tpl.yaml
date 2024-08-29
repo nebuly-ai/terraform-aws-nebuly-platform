@@ -69,12 +69,9 @@ azureml:
   enabled: false
 
 aiModels:
-  registry: azure_storage
-  azure:
-    storageAccountName: ${storage_account_name}
-    storageContainerName: ${storage_container_name}
-    tenantId: ${tenant_id}
-    managedIdentityClientId: ${kubelet_identity_client_id}
+  registry: aws_s3
+  aws:
+    bucketName: ${s3_bucket_name}
 
   sync:
     enabled: true
@@ -166,23 +163,23 @@ kafka:
       memory: 6Gi
 
 analyticDatabase:
-  server: "${postgres_server_url}"
-  name: ${postgres_analytics_database_name}
+  server: "${analytics_postgres_server_url}"
+  name: ${analytics_postgres_db_name}
   existingSecret:
     name: ${secret_provider_class_secret_name}
-    userKey: ${k8s_secret_key_db_username}
-    passwordKey: ${k8s_secret_key_db_password}
+    userKey: ${k8s_secret_key_analytics_db_username}
+    passwordKey: ${k8s_secret_key_analytics_db_password}
 
 auth:
   image:
     repository: "ghcr.io/nebuly-ai/nebuly-tenant-registry"
 
-  postgresServer: "${postgres_server_url}"
-  postgresDatabase: ${postgres_auth_database_name}
+  postgresServer: "${auth_postgres_server_url}"
+  postgresDatabase: ${auth_postgres_db_name}
   existingSecret:
     name: ${secret_provider_class_secret_name}
-    postgresUserKey: ${k8s_secret_key_db_username}
-    postgresPasswordKey: ${k8s_secret_key_db_password}
+    postgresUserKey: ${k8s_secret_key_auth_db_username}
+    postgresPasswordKey: ${k8s_secret_key_auth_db_password}
     jwtSigningKey: ${k8s_secret_key_jwt_signing_key}
 
   loginModes: "password"
