@@ -30,6 +30,16 @@ variable "openai_api_key" {
   description = "The API Key used for authenticating with OpenAI."
   type        = string
 }
+variable "nebuly_credentials" {
+  type = object({
+    client_id : string
+    client_secret : string
+  })
+  description = <<EOT
+  The credentials provided by Nebuly are required for activating your platform installation. 
+  If you haven't received your credentials or have lost them, please contact support@nebuly.ai.
+  EOT
+}
 
 
 ### Networking ###

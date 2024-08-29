@@ -394,7 +394,7 @@ resource "aws_secretsmanager_secret_version" "admin_user_password" {
 
 
 
-### ----------- Networking ----------- ###
+# ----------- Networking ----------- #
 resource "aws_security_group" "eks_load_balancer" {
   name        = local.eks_load_balancer_name
   description = "Rules for the EKS load balancer."
@@ -458,7 +458,7 @@ resource "aws_security_group_rule" "allow_all_outbound_within_vpc" {
 
 
 
-### ----------- External secrets ----------- ###
+# ----------- External secrets ----------- #
 resource "aws_secretsmanager_secret" "openai_api_key" {
   name = (
     local.use_secrets_suffix ?
@@ -470,9 +470,26 @@ resource "aws_secretsmanager_secret_version" "openai_api_key" {
   secret_id     = aws_secretsmanager_secret.openai_api_key.id
   secret_string = var.openai_api_key
 }
+resource "aws_secretsmanager_secret" "nebuly_credentials" {
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-nebuly-credentials-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-nebuly-credentials", var.resource_prefix)
+  )
+}
+resource "aws_secretsmanager_secret_version" "nebuly_credentials" {
+  secret_id = aws_secretsmanager_secret.nebuly_credentials.id
+  secret_string = jsonencode(
+    {
+      "client-id" : var.nebuly_credentials.client_id
+      "client-secret" : var.nebuly_credentials.client_secret
+    }
+  )
+}
 
 
-### ----------- S3 Storage ----------- ###
+
+# ----------- S3 Storage ----------- #
 resource "aws_s3_bucket" "ai_models" {
   bucket_prefix = format("%s-%s", var.resource_prefix, "ai-models")
   tags          = var.tags
@@ -480,5 +497,80 @@ resource "aws_s3_bucket" "ai_models" {
 resource "aws_iam_role_policy_attachment" "ai_models__eks_reader" {
   role       = module.eks_iam_role.iam_role_name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Attach the read-only S3 access policy
+}
+
+
+
+# ------ Post provisioning ------ #
+locals {
+  secret_provider_class_name        = "nebuly-platform"
+  secret_provider_class_secret_name = "nebuly-platform-credentials"
+
+  # k8s secrets keys
+  k8s_secret_key_analytics_db_username = "analytics-db-username"
+  k8s_secret_key_analytics_db_password = "analytics-db-password"
+  k8s_secret_key_auth_db_username      = "auth-db-username"
+  k8s_secret_key_auth_db_password      = "auth-db-password"
+  k8s_secret_key_jwt_signing_key       = "jwt-signing-key"
+  k8s_secret_key_openai_api_key        = "openai-api-key"
+  k8s_secret_key_azure_client_id       = "azure-client-id"
+  k8s_secret_key_azure_client_secret   = "azure-client-secret"
+  k8s_secret_key_nebuly_client_id      = "nebuly-azure-client-id"
+  k8s_secret_key_nebuly_client_secret  = "nebuly-azure-client-secret"
+
+  #  helm_values = templatefile(
+  #    "${path.module}/templates/helm-values.tpl.yaml",
+  #    {
+  #      platform_domain        = var.platform_domain
+  #      image_pull_secret_name = var.k8s_image_pull_secret_name
+  #
+  #      openai_endpoint               = azurerm_cognitive_account.main.endpoint
+  #      openai_frustration_deployment = azurerm_cognitive_deployment.gpt_4_turbo.name
+  #
+  #      secret_provider_class_name        = local.secret_provider_class_name
+  #      secret_provider_class_secret_name = local.secret_provider_class_secret_name
+  #
+  #      k8s_secret_key_db_username          = local.k8s_secret_key_db_username
+  #      k8s_secret_key_db_password          = local.k8s_secret_key_db_password
+  #      k8s_secret_key_jwt_signing_key      = local.k8s_secret_key_jwt_signing_key
+  #      k8s_secret_key_openai_api_key       = local.k8s_secret_key_openai_api_key
+  #      k8s_secret_key_nebuly_client_secret = local.k8s_secret_key_nebuly_client_secret
+  #      k8s_secret_key_nebuly_client_id     = local.k8s_secret_key_nebuly_client_id
+  #
+  #      postgres_server_url              = azurerm_postgresql_flexible_server.main.fqdn
+  #      postgres_auth_database_name      = azurerm_postgresql_flexible_server_database.auth.name
+  #      postgres_analytics_database_name = azurerm_postgresql_flexible_server_database.analytics.name
+  #
+  #      kubelet_identity_client_id = module.aks.kubelet_identity[0].client_id
+  #      storage_account_name       = azurerm_storage_account.main.name
+  #      storage_container_name     = azurerm_storage_container.models.name
+  #      tenant_id                  = data.azurerm_client_config.current.tenant_id
+  #    },
+  #  )
+  secret_provider_class = templatefile(
+    "${path.module}/templates/secret-provider-class.tpl.yaml",
+    {
+      secret_provider_class_name        = local.secret_provider_class_name
+      secret_provider_class_secret_name = local.secret_provider_class_secret_name
+
+      secret_name_jwt_signing_key          = aws_secretsmanager_secret.auth_jwt_key.name
+      secret_name_auth_db_credentials      = aws_secretsmanager_secret.rds_auth_credentials.name
+      secret_name_analytics_db_credentials = aws_secretsmanager_secret.rds_analytics_credentials.name
+      secret_name_openai_api_key           = aws_secretsmanager_secret.openai_api_key.name
+
+      secret_name_nebuly_credentials = aws_secretsmanager_secret.nebuly_credentials.name
+
+      k8s_secret_key_auth_db_username      = local.k8s_secret_key_auth_db_username
+      k8s_secret_key_auth_db_password      = local.k8s_secret_key_auth_db_password
+      k8s_secret_key_analytics_db_username = local.k8s_secret_key_analytics_db_username
+      k8s_secret_key_analytics_db_password = local.k8s_secret_key_analytics_db_password
+      k8s_secret_key_jwt_signing_key       = local.k8s_secret_key_jwt_signing_key
+      k8s_secret_key_openai_api_key        = local.k8s_secret_key_openai_api_key
+      k8s_secret_key_azure_client_id       = local.k8s_secret_key_azure_client_id
+      k8s_secret_key_azure_client_secret   = local.k8s_secret_key_azure_client_secret
+      k8s_secret_key_nebuly_client_secret  = local.k8s_secret_key_nebuly_client_secret
+      k8s_secret_key_nebuly_client_id      = local.k8s_secret_key_nebuly_client_id
+    },
+  )
 }
 

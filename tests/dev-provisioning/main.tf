@@ -29,6 +29,12 @@ variable "availability_zones" {
   type    = list(string)
   default = ["us-east-1a", "us-east-1b"]
 }
+variable "nebuly_credentials" {
+  type = object({
+    client_id     = string
+    client_secret = string
+  })
+}
 
 
 # ------ Data Sources ------ #
@@ -110,6 +116,8 @@ module "main" {
   subnet_ids                  = data.aws_subnets.default.ids
   resource_prefix             = "nbllab"
   openai_api_key              = "test"
+
+  nebuly_credentials = var.nebuly_credentials
 }
 
 
