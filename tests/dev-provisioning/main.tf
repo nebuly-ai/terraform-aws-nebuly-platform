@@ -73,20 +73,6 @@ module "main" {
   eks_cloudwatch_observability_enabled = true
   eks_cluster_endpoint_public_access   = true
   eks_kubernetes_version               = "1.28"
-  eks_managed_node_groups = {
-    "workers" : {
-      instance_types = ["r5.xlarge"]
-      min_size       = 1
-      max_size       = 1
-      desired_size   = 1
-    }
-    "gpu-a100" : {
-      instance_types = ["p4d.24xlarge"]
-      min_size       = 0
-      max_size       = 1
-      desired_size   = 0
-    }
-  }
   allowed_inbound_cidr_blocks = {
     "all" : "0.0.0.0/0"
   }

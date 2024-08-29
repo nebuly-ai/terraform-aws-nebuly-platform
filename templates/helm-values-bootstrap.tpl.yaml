@@ -4,5 +4,6 @@ cluster-autoscaler:
     clusterName: ${eks_cluster_name}
   rbac:
     serviceAccount:
+      name: cluster-autoscaler
       annotations:
         eks.amazonaws.com/role-arn: ${eks_iam_role_arn}

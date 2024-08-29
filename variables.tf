@@ -332,6 +332,10 @@ variable "eks_service_accounts" {
       name : "cluster-autoscaler"
     },
     {
+      namespace : "nebuly-bootstrap"
+      name : "cluster-autoscaler"
+    },
+    {
       namespace : "nebuly"
       name : "aws-load-balancer-controller"
     },
