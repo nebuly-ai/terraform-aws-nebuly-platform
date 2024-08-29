@@ -121,7 +121,7 @@ module "main" {
   openai_api_key              = "test"
 
   nebuly_credentials          = var.nebuly_credentials
-  platform_domain             = "platform.azure.testing.nebuly.com"
+  platform_domain             = "platform.aws.testing.nebuly.com"
 }
 
 
@@ -134,24 +134,15 @@ output "eks_cluster_get_credentials" {
   description = "Command for getting the credentials for accessing the Kubernetes Cluster."
   value       = module.main.eks_cluster_get_credentials
 }
-output "eks_cluster_security_group_id" {
-  description = "Security group ids attached to the cluster control plane."
-  value       = module.main.eks_cluster_security_group_id
+output "helm_values" {
+  value = module.main.helm_values
+  sensitive = true
 }
-output "secret_names" {
-  value = {
-    "auth_jwt_key" : module.main.auth_jwt_key_secret_name
-    "openai_api_key" : module.main.openai_api_key_secret_name
-    "auth_db" : module.main.auth_db.password_secret_name
-    "analytics_db" : module.main.analytics_db.password_secret_name
-  }
+output "helm_values_bootstrap" {
+  value = module.main.helm_values_bootstrap
+  sensitive = true
 }
-output "s3_bucket_ai_models" {
-  value = module.main.s3_bucket_ai_models
-}
-output "auth_db" {
-  value = module.main.auth_db
-}
-output "analytics_db" {
-  value = module.main.analytics_db
+output "secret_provider_class" {
+  value = module.main.secret_provider_class
+  sensitive = true
 }

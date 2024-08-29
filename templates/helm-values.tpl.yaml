@@ -4,6 +4,12 @@ strimzi:
 imagePullSecrets:
   - name: ${image_pull_secret_name}
 
+serviceAccount:
+  name: nebuly
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: ${eks_iam_role_arn}
+
 backend:
   image:
     repository: "ghcr.io/nebuly-ai/nebuly-backend"
@@ -85,19 +91,15 @@ lionLinguist:
   image:
     repository: "ghcr.io/nebuly-ai/nebuly-lion-linguist"
 
-  # TODO: will be updated when we implement CPU + Batch Job mode
   modelsCache:
     enabled: true
-    storageClassName: managed-csi-zrs
+    storageClassName: gp2-csi
     accessModes:
       - ReadWriteOnce
 
   resources:
-    requests:
-      cpu: "1"
     limits:
-      memory: 8Gi
-      nvidia.com/gpu: 1
+      memory: 4Gi
 
   volumeMounts:
     - name: secrets-store
@@ -127,6 +129,29 @@ ingestionWorker:
         volumeAttributes:
           secretProviderClass: ${secret_provider_class_name}
 
+  topicsClustering:
+    affinity: 
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: nebuly.com/accelerator
+                  operator: In
+                  values:
+                    - nvidia-tesla-t4
+
+  suggestionsGeneration:
+    affinity: 
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: nebuly.com/accelerator
+                  operator: In
+                  values:
+                    - nvidia-tesla-t4
+
+
 actionsProcessing:
   schedule: "0 23 * * *" # Every day at 11:00 PM, cluster's timezone
   affinity:
@@ -148,13 +173,13 @@ kafka:
   zookeeper:
     replicas: 1
     storage:
-      class: managed-csi-zrs
+      class: gp2-csi
   replicas: 1
   config:
     offsets.topic.replication.factor: 1
     replica.selector.class: org.apache.kafka.common.replica.RackAwareReplicaSelector
   storage:
-    class: managed-csi-zrs
+    class: gp2-csi
     size: 32Gi
   resources:
     limits:

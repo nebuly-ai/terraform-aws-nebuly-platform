@@ -481,8 +481,8 @@ resource "aws_secretsmanager_secret_version" "nebuly_credentials" {
   secret_id = aws_secretsmanager_secret.nebuly_credentials.id
   secret_string = jsonencode(
     {
-      "client-id" : var.nebuly_credentials.client_id
-      "client-secret" : var.nebuly_credentials.client_secret
+      "client_id" : var.nebuly_credentials.client_id
+      "client_secret" : var.nebuly_credentials.client_secret
     }
   )
 }
@@ -518,6 +518,14 @@ locals {
   k8s_secret_key_nebuly_client_id      = "nebuly-azure-client-id"
   k8s_secret_key_nebuly_client_secret  = "nebuly-azure-client-secret"
 
+  bootstrap_helm_values = templatefile(
+    "${path.module}/templates/helm-values-bootstrap.tpl.yaml",
+    {
+
+      eks_cluster_name = local.eks_cluster_name
+      eks_iam_role_arn = module.eks_iam_role.iam_role_arn
+    }
+  )
   helm_values = templatefile(
     "${path.module}/templates/helm-values.tpl.yaml",
     {
@@ -546,6 +554,7 @@ locals {
       analytics_postgres_db_name    = "analytics"
       auth_postgres_server_url      = module.rds_postgres_auth.db_instance_address
       auth_postgres_db_name         = "auth"
+      eks_iam_role_arn              = module.eks_iam_role.iam_role_arn
     },
   )
   secret_provider_class = templatefile(

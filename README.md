@@ -128,6 +128,7 @@ module "main" {
 | <a name="output_eks_load_balancer_security_group"></a> [eks\_load\_balancer\_security\_group](#output\_eks\_load\_balancer\_security\_group) | The security group linked with the EKS load balancer. |
 | <a name="output_eks_service_accounts"></a> [eks\_service\_accounts](#output\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. |
 | <a name="output_helm_values"></a> [helm\_values](#output\_helm\_values) | The `values.yaml` file for installing Nebuly with Helm.<br><br>  The default standard configuration is used, which uses Nginx as ingress controller and exposes the application to the Internet. This configuration can be customized according to specific needs. |
+| <a name="output_helm_values_bootstrap"></a> [helm\_values\_bootstrap](#output\_helm\_values\_bootstrap) | The `bootrap.values.yaml` file for installing the Nebuly AWS Boostrap chart with Helm. |
 | <a name="output_openai_api_key_secret_name"></a> [openai\_api\_key\_secret\_name](#output\_openai\_api\_key\_secret\_name) | The name of the secret storing the OpenAI API Key. |
 | <a name="output_s3_bucket_ai_models"></a> [s3\_bucket\_ai\_models](#output\_s3\_bucket\_ai\_models) | The details of the bucket used as model registry for storing the AI Models |
 | <a name="output_secret_provider_class"></a> [secret\_provider\_class](#output\_secret\_provider\_class) | The `secret-provider-class.yaml` file to make Kubernetes reference the secrets stored in the Key Vault. |
