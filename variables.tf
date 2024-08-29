@@ -40,11 +40,11 @@ variable "openai_api_key" {
 }
 variable "openai_endpoint" {
   description = "The endpoint of the OpenAI API."
-  type = string
+  type        = string
 }
 variable "openai_gpt4_deployment_name" {
   description = "The name of the deployment to use for the GPT-4 model."
-  type = string
+  type        = string
 }
 variable "nebuly_credentials" {
   type = object({
