@@ -4,98 +4,108 @@ Terraform module for provisioning Nebuly Platform resources on AWS.
 
 Available on [Terraform Registry](https://registry.terraform.io/modules/nebuly-ai/nebuly-platform/aws/latest).
 
-## Examples
+## Quickstart
 
-### Basic usage
-```hcl
-# ------ Variables ------ #
-variable "aws_access_key" {
-  type = string
-}
-variable "aws_secret_key" {
-  type = string
-}
-variable "region" {
-  type    = string
-  default = "us-east-1"
-}
-variable "availability_zones" {
-  type    = list(string)
-  default = ["us-east-1a", "us-east-1b"]
-}
+> ⚠️  **Prerequisite**:
+> before using this Terraform module, ensure that you have your Nebuly credentials ready. 
+> These credentials are necessary to activate your installation and should be provided as input via the `nebuly_credentials` input.
 
+To get started with Nebuly installation on AWS, you can follow the steps below. 
 
-# ----------- Terraform setup ----------- #
-terraform {
-  required_version = ">1.8"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~>5.45"
-    }
-  }
-}
-provider "aws" {
-  access_key = "<access-key>"
-  secret_key = "<secret-key>"
-  region     = "us-east-1"
-}
+These instructions will guide you through the installation using Nebuly's default standard configuration with the Nebuly Helm Chart.
 
+For specific configurations or assistance, reach out to the Nebuly Slack channel or email [support@nebuly.ai](mailto:support@nebuly.ai).
 
-# ------ Data Sources ------ #
-data "aws_vpc" "default" {
-  default = true
-}
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
-data "aws_security_group" "default" {
-  name   = "default"
-  vpc_id = data.aws_vpc.default.id
-}
+### 1. Terraform setup
 
+Import Nebuly into your Terraform root module, provide the necessary variables, and apply the changes.
 
-# ------ Main ------ #
-module "main" {
-  source  = "nebuly-ai/nebuly-platform/aws"
-  version = "0.2.10"
+For configuration examples, you can refer to the [Examples](#examples). 
 
-  security_group = data.aws_security_group.default
+Once the Terraform changes are applied, proceed with the next steps to deploy Nebuly on the provisioned Elastic Kubernetes Service (EKS) cluster.
 
-  eks_cloudwatch_observability_enabled = true
-  eks_cluster_endpoint_public_access   = true
-  eks_kubernetes_version               = "1.28"
-  allowed_inbound_cidr_blocks          = {}
+### 2. Connect to the EKS cluster
 
-  rds_multi_availability_zone_enabled = false
-  rds_availability_zone               = var.availability_zones[0]
+Prerequisites: install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-  vpc_id          = data.aws_vpc.default.id
-  region          = var.region
-  subnet_ids      = data.aws_subnets.default.ids
-  resource_prefix = "nebuly"
-  openai_api_key  = "my-key"
+* Fetch the command for retrieving the credentials from the module outputs:
 
-
-  eks_managed_node_groups = {
-    "workers" = {
-      instance_types = ["r5.xlarge"]
-      min_size       = 1
-      max_size       = 1
-      desired_size   = 1
-
-      tags = {
-        "my-tag" : "value"
-      }
-    }
-  }
-}
-
+```shell
+terraform output eks_get_credentials
 ```
 
+* Run the command you got from the previous step
+
+### 3. Create image pull secret
+
+The auto-generated Helm values use the name defined in the k8s_image_pull_secret_name input variable for the Image Pull Secret. If you prefer a custom name, update either the Terraform variable or your Helm values accordingly.
+Create a Kubernetes [Image Pull Secret](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) for 
+authenticating with your Docker registry and pulling the Nebuly Docker images.
+
+
+### 4. Create Secret Provider Class
+Create a Secret Provider Class to allow EKS to fetch credentials from the provisioned Key Vault.
+
+* Get the Secret Provider Class YAML definition from the Terraform module outputs:
+  ```shell
+  terraform output secret_provider_class
+  ```
+
+* Copy the output of the command into a file named secret-provider-class.yaml.
+
+* Run the following commands to install Nebuly in the Kubernetes namespace nebuly:
+
+  ```shell
+  kubectl create ns nebuly
+  kubectl apply --server-side -f secret-provider-class.yaml
+  ```
+
+### 5. Bootstrap EKS cluster
+
+Retrieve the auto-generated values from the Terraform outputs and save them to a file named `values-bootstrap.yaml`:
+
+```shell
+terraform output helm_values_bootstrap
+```
+
+Install the bootstrap Helm chart to set up all the dependencies required for installing the Nebuly Platform Helm chart on EKS.
+
+Refer to the [chart documentation](https://github.com/nebuly-ai/helm-charts/tree/main/bootstrap-azure) for all the configuration details.
+
+```shell
+helm install oci://ghcr.io/nebuly-ai/helm-charts/bootstrap-azure \
+  --namespace nebuly-bootstrap \
+  --generate-name \
+  --create-namespace \
+  -f values-bootstrap.yaml
+```
+
+### 6. Install nebuly-platform chart
+
+Retrieve the auto-generated values from the Terraform outputs and save them to a file named `values.yaml`:
+
+```shell
+terraform output helm_values
+```
+
+Install the Nebuly Platform Helm chart. 
+Refer to the [chart documentation](https://github.com/nebuly-ai/helm-charts/tree/main/nebuly-platform) for detailed configuration options.
+
+```shell
+helm install oci://ghcr.io/nebuly-ai/helm-charts/nebuly-platform \
+  --namespace nebuly \
+  -f values.yaml \
+  --timeout 10m \
+  <your-release-name> 
+```
+
+> ℹ️  During the initial installation of the chart, all required Nebuly LLMs are uploaded to your model registry. 
+> This process can take approximately 5 minutes. If the helm install command appears to be stuck, don't worry: it's simply waiting for the upload to finish.
+
+
+## Examples
+
+You can find examples of code that uses this Terraform module in the [examples](./examples) directory.
 
 
 
