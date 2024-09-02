@@ -162,7 +162,7 @@ actionsProcessing:
               - key: nebuly.com/accelerator
                 operator: In
                 values:
-                  - nvidia-a-a10
+                  - nvidia-ampere-a10
   tolerations:
     - effect: NoSchedule
       key: nvidia.com/gpu
