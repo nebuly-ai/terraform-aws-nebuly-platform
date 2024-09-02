@@ -31,7 +31,7 @@ Prerequisites: install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/user
 * Fetch the command for retrieving the credentials from the module outputs:
 
 ```shell
-terraform output eks_get_credentials
+terraform output eks_cluster_get_credentials
 ```
 
 * Run the command you got from the previous step
