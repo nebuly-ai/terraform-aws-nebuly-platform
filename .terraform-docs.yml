@@ -86,10 +86,10 @@ content: |-
 
   Install the bootstrap Helm chart to set up all the dependencies required for installing the Nebuly Platform Helm chart on EKS.
 
-  Refer to the [chart documentation](https://github.com/nebuly-ai/helm-charts/tree/main/bootstrap-azure) for all the configuration details.
+  Refer to the [chart documentation](https://github.com/nebuly-ai/helm-charts/tree/main/bootstrap-aws) for all the configuration details.
 
   ```shell
-  helm install oci://ghcr.io/nebuly-ai/helm-charts/bootstrap-azure \
+  helm install oci://ghcr.io/nebuly-ai/helm-charts/bootstrap-aws \
     --namespace nebuly-bootstrap \
     --generate-name \
     --create-namespace \

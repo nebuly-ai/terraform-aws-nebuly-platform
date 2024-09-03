@@ -513,8 +513,6 @@ locals {
   k8s_secret_key_auth_db_password      = "auth-db-password"
   k8s_secret_key_jwt_signing_key       = "jwt-signing-key"
   k8s_secret_key_openai_api_key        = "openai-api-key"
-  k8s_secret_key_azure_client_id       = "azure-client-id"
-  k8s_secret_key_azure_client_secret   = "azure-client-secret"
   k8s_secret_key_nebuly_client_id      = "nebuly-azure-client-id"
   k8s_secret_key_nebuly_client_secret  = "nebuly-azure-client-secret"
 
@@ -576,8 +574,6 @@ locals {
       k8s_secret_key_analytics_db_password = local.k8s_secret_key_analytics_db_password
       k8s_secret_key_jwt_signing_key       = local.k8s_secret_key_jwt_signing_key
       k8s_secret_key_openai_api_key        = local.k8s_secret_key_openai_api_key
-      k8s_secret_key_azure_client_id       = local.k8s_secret_key_azure_client_id
-      k8s_secret_key_azure_client_secret   = local.k8s_secret_key_azure_client_secret
       k8s_secret_key_nebuly_client_secret  = local.k8s_secret_key_nebuly_client_secret
       k8s_secret_key_nebuly_client_id      = local.k8s_secret_key_nebuly_client_id
     },
