@@ -42,25 +42,7 @@ The auto-generated Helm values use the name defined in the k8s_image_pull_secret
 Create a Kubernetes [Image Pull Secret](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) for 
 authenticating with your Docker registry and pulling the Nebuly Docker images.
 
-
-### 4. Create Secret Provider Class
-Create a Secret Provider Class to allow EKS to fetch credentials from the provisioned Key Vault.
-
-* Get the Secret Provider Class YAML definition from the Terraform module outputs:
-  ```shell
-  terraform output secret_provider_class
-  ```
-
-* Copy the output of the command into a file named secret-provider-class.yaml.
-
-* Run the following commands to install Nebuly in the Kubernetes namespace nebuly:
-
-  ```shell
-  kubectl create ns nebuly
-  kubectl apply --server-side -f secret-provider-class.yaml
-  ```
-
-### 5. Bootstrap EKS cluster
+### 4. Bootstrap EKS cluster
 
 Retrieve the auto-generated values from the Terraform outputs and save them to a file named `values-bootstrap.yaml`:
 
@@ -79,6 +61,25 @@ helm install oci://ghcr.io/nebuly-ai/helm-charts/bootstrap-aws \
   --create-namespace \
   -f values-bootstrap.yaml
 ```
+
+
+### 5. Create Secret Provider Class
+Create a Secret Provider Class to allow EKS to fetch credentials from the provisioned Key Vault.
+
+* Get the Secret Provider Class YAML definition from the Terraform module outputs:
+  ```shell
+  terraform output secret_provider_class
+  ```
+
+* Copy the output of the command into a file named secret-provider-class.yaml.
+
+* Run the following commands to install Nebuly in the Kubernetes namespace nebuly:
+
+  ```shell
+  kubectl create ns nebuly
+  kubectl apply --server-side -f secret-provider-class.yaml
+  ```
+
 
 ### 6. Install nebuly-platform chart
 
@@ -101,6 +102,17 @@ helm install oci://ghcr.io/nebuly-ai/helm-charts/nebuly-platform \
 
 > ℹ️  During the initial installation of the chart, all required Nebuly LLMs are uploaded to your model registry. 
 > This process can take approximately 5 minutes. If the helm install command appears to be stuck, don't worry: it's simply waiting for the upload to finish.
+
+### 7. Access Nebuly
+
+Retrieve the external Load Balancer DNS name to access the Nebuly Platform:
+
+```shell
+kubectl get svc -n nebuly-bootstrap -o jsonpath='{range .items[?(@.status.loadBalancer.ingress)]}{.status.loadBalancer.ingress[0].ip}{"\n"}{end}'
+```
+
+You can then register a DNS CNAME record pointing to the Load Balancer DNS name to access Nebuly via the custom domain you provided 
+in the input variable `platform_domain`.
 
 
 ## Examples
