@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.3
+
+### Fixes
+
+- Fix missing `awsRegion` param in generated `values-bootstrap.yaml` file.
+
 ## v0.4.0
 
 ### Features

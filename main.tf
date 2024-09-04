@@ -519,7 +519,7 @@ locals {
   bootstrap_helm_values = templatefile(
     "${path.module}/templates/helm-values-bootstrap.tpl.yaml",
     {
-
+      eks_region       = var.region
       eks_cluster_name = local.eks_cluster_name
       eks_iam_role_arn = module.eks_iam_role.iam_role_arn
     }

@@ -2,6 +2,7 @@ cluster-autoscaler:
   enabled: true
   autoDiscovery:
     clusterName: ${eks_cluster_name}
+  awsRegion: ${eks_region}
   rbac:
     serviceAccount:
       name: cluster-autoscaler
