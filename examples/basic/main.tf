@@ -71,26 +71,11 @@ module "main" {
     client_secret = "<your-nebuly-client-secret>"
   }
 
-
   vpc_id          = data.aws_vpc.default.id
   region          = var.region
   subnet_ids      = data.aws_subnets.default.ids
   resource_prefix = "nebuly"
   openai_api_key  = "my-key"
-
-
-  eks_managed_node_groups = {
-    "workers" = {
-      instance_types = ["r5.xlarge"]
-      min_size       = 1
-      max_size       = 1
-      desired_size   = 1
-
-      tags = {
-        "my-tag" : "value"
-      }
-    }
-  }
 }
 
 
