@@ -130,7 +130,7 @@ ingestionWorker:
           secretProviderClass: ${secret_provider_class_name}
 
   topicsClustering:
-    affinity: 
+    affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
@@ -141,7 +141,7 @@ ingestionWorker:
                     - nvidia-tesla-t4
 
   suggestionsGeneration:
-    affinity: 
+    affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
@@ -151,9 +151,16 @@ ingestionWorker:
                   values:
                     - nvidia-tesla-t4
 
-
 actionsProcessing:
   schedule: "0 23 * * *" # Every day at 11:00 PM, cluster's timezone
+  hostIPC: true
+  resources:
+    requests:
+      cpu: 1
+    limits:
+      memory: 8Gi
+      nvidia.com/gpu: 4
+
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

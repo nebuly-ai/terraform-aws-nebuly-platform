@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.4
+
+### Fixes
+
+- Run Actions Processsing job on multiple GPUs.
+
+
 ## v0.4.3
 
 ### Fixes
