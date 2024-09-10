@@ -219,7 +219,16 @@ auth:
   # TODO: optional Microsoft SSO
   microsoft:
     enabled: false
-  # TODO: optional Okta SSO
+
+  # Optional Okta SSO
+  okta:
+    enabled: ${okta_sso_enabled}
+    issuer: ${okta_sso_issuer}
+    redirectUri: https://${platform_domain}/auth/oauth/okta/callback
+    existingSecret:
+      name: ${secret_provider_class_secret_name}
+      clientIdKey: ${k8s_secret_key_okta_sso_client_id}
+      clientSecretKey: ${k8s_secret_key_okta_sso_client_secret}
 
   volumeMounts:
     - name: secrets-store

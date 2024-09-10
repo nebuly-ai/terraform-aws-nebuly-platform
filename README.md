@@ -172,6 +172,7 @@ You can find examples of code that uses this Terraform module in the [examples](
 | <a name="input_eks_service_accounts"></a> [eks\_service\_accounts](#input\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. | <pre>list(object({<br>    name : string<br>    namespace : string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "aws-load-balancer-controller",<br>    "namespace": "kube-system"<br>  },<br>  {<br>    "name": "cluster-autoscaler",<br>    "namespace": "kube-system"<br>  },<br>  {<br>    "name": "cluster-autoscaler",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "cluster-autoscaler",<br>    "namespace": "nebuly-bootstrap"<br>  },<br>  {<br>    "name": "aws-load-balancer-controller",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "nebuly",<br>    "namespace": "nebuly"<br>  },<br>  {<br>    "name": "nebuly",<br>    "namespace": "default"<br>  }<br>]</pre> | no |
 | <a name="input_k8s_image_pull_secret_name"></a> [k8s\_image\_pull\_secret\_name](#input\_k8s\_image\_pull\_secret\_name) | The name of the Kubernetes Image Pull Secret to use. <br>  This value will be used to auto-generate the values.yaml file for installing the Nebuly Platform Helm chart. | `string` | `"nebuly-docker-pull"` | no |
 | <a name="input_nebuly_credentials"></a> [nebuly\_credentials](#input\_nebuly\_credentials) | The credentials provided by Nebuly are required for activating your platform installation. <br>  If you haven't received your credentials or have lost them, please contact support@nebuly.ai. | <pre>object({<br>    client_id : string<br>    client_secret : string<br>  })</pre> | n/a | yes |
+| <a name="input_okta_sso"></a> [okta\_sso](#input\_okta\_sso) | Settings for configuring the Okta SSO integration. | <pre>object({<br>    issuer : string<br>    client_id : string<br>    client_secret : string<br>  })</pre> | `null` | no |
 | <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | The API Key used for authenticating with OpenAI. | `string` | n/a | yes |
 | <a name="input_openai_endpoint"></a> [openai\_endpoint](#input\_openai\_endpoint) | The endpoint of the OpenAI API. | `string` | n/a | yes |
 | <a name="input_openai_gpt4_deployment_name"></a> [openai\_gpt4\_deployment\_name](#input\_openai\_gpt4\_deployment\_name) | The name of the deployment to use for the GPT-4 model. | `string` | n/a | yes |
@@ -201,17 +202,19 @@ You can find examples of code that uses this Terraform module in the [examples](
 ## Resources
 
 
-- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#497)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#493)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_reader (/terraform-docs/main.tf#517)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#513)
 - resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#382)
 - resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#365)
 - resource.aws_secretsmanager_secret.nebuly_credentials (/terraform-docs/main.tf#473)
+- resource.aws_secretsmanager_secret.okta_sso_credentials (/terraform-docs/main.tf#489)
 - resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#462)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#139)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#228)
 - resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#390)
 - resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#373)
 - resource.aws_secretsmanager_secret_version.nebuly_credentials (/terraform-docs/main.tf#480)
+- resource.aws_secretsmanager_secret_version.okta_sso_credentials (/terraform-docs/main.tf#498)
 - resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#469)
 - resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#146)
 - resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#235)

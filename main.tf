@@ -486,6 +486,26 @@ resource "aws_secretsmanager_secret_version" "nebuly_credentials" {
     }
   )
 }
+resource "aws_secretsmanager_secret" "okta_sso_credentials" {
+  count = var.okta_sso == null ? 0 : 1
+
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-okta-sso-credentials-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-okta-sso-credentials", var.resource_prefix)
+  )
+}
+resource "aws_secretsmanager_secret_version" "okta_sso_credentials" {
+  count = var.okta_sso == null ? 0 : 1
+
+  secret_id = aws_secretsmanager_secret.okta_sso_credentials[0].id
+  secret_string = jsonencode(
+    {
+      "client_id" : var.okta_sso.client_id
+      "client_secret" : var.okta_sso.client_secret
+    }
+  )
+}
 
 
 
@@ -507,14 +527,16 @@ locals {
   secret_provider_class_secret_name = "nebuly-platform-credentials"
 
   # k8s secrets keys
-  k8s_secret_key_analytics_db_username = "analytics-db-username"
-  k8s_secret_key_analytics_db_password = "analytics-db-password"
-  k8s_secret_key_auth_db_username      = "auth-db-username"
-  k8s_secret_key_auth_db_password      = "auth-db-password"
-  k8s_secret_key_jwt_signing_key       = "jwt-signing-key"
-  k8s_secret_key_openai_api_key        = "openai-api-key"
-  k8s_secret_key_nebuly_client_id      = "nebuly-azure-client-id"
-  k8s_secret_key_nebuly_client_secret  = "nebuly-azure-client-secret"
+  k8s_secret_key_analytics_db_username  = "analytics-db-username"
+  k8s_secret_key_analytics_db_password  = "analytics-db-password"
+  k8s_secret_key_auth_db_username       = "auth-db-username"
+  k8s_secret_key_auth_db_password       = "auth-db-password"
+  k8s_secret_key_jwt_signing_key        = "jwt-signing-key"
+  k8s_secret_key_openai_api_key         = "openai-api-key"
+  k8s_secret_key_nebuly_client_id       = "nebuly-azure-client-id"
+  k8s_secret_key_nebuly_client_secret   = "nebuly-azure-client-secret"
+  k8s_secret_key_okta_sso_client_id     = "okta-sso-client-id"
+  k8s_secret_key_okta_sso_client_secret = "okta-sso-client-secret"
 
   bootstrap_helm_values = templatefile(
     "${path.module}/templates/helm-values-bootstrap.tpl.yaml",
@@ -546,6 +568,11 @@ locals {
       k8s_secret_key_nebuly_client_secret = local.k8s_secret_key_nebuly_client_secret
       k8s_secret_key_nebuly_client_id     = local.k8s_secret_key_nebuly_client_id
 
+      okta_sso_enabled                      = var.okta_sso != null
+      okta_sso_issuer                       = var.okta_sso != null ? var.okta_sso.issuer : ""
+      k8s_secret_key_okta_sso_client_id     = local.k8s_secret_key_okta_sso_client_id
+      k8s_secret_key_okta_sso_client_secret = local.k8s_secret_key_okta_sso_client_secret
+
       s3_bucket_name = aws_s3_bucket.ai_models.bucket
 
       analytics_postgres_server_url = module.rds_postgres_analytics.db_instance_address
@@ -565,8 +592,13 @@ locals {
       secret_name_auth_db_credentials      = aws_secretsmanager_secret.rds_auth_credentials.name
       secret_name_analytics_db_credentials = aws_secretsmanager_secret.rds_analytics_credentials.name
       secret_name_openai_api_key           = aws_secretsmanager_secret.openai_api_key.name
+      secret_name_okta_sso_credentials     = var.okta_sso == null ? "" : aws_secretsmanager_secret.okta_sso_credentials[0].name
 
       secret_name_nebuly_credentials = aws_secretsmanager_secret.nebuly_credentials.name
+
+      okta_sso_enabled                      = var.okta_sso != null
+      k8s_secret_key_okta_sso_client_id     = local.k8s_secret_key_okta_sso_client_id
+      k8s_secret_key_okta_sso_client_secret = local.k8s_secret_key_okta_sso_client_secret
 
       k8s_secret_key_auth_db_username      = local.k8s_secret_key_auth_db_username
       k8s_secret_key_auth_db_password      = local.k8s_secret_key_auth_db_password

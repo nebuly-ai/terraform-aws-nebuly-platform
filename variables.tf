@@ -56,6 +56,15 @@ variable "nebuly_credentials" {
   If you haven't received your credentials or have lost them, please contact support@nebuly.ai.
   EOT
 }
+variable "okta_sso" {
+  description = "Settings for configuring the Okta SSO integration."
+  type = object({
+    issuer : string
+    client_id : string
+    client_secret : string
+  })
+  default = null
+}
 
 
 # ------ Kubernetes ------ #
