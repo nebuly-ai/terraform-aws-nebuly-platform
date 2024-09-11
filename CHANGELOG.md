@@ -1,11 +1,16 @@
 # Changelog
 
+## v0.5.0
+
+### Features
+
+- Okta SSO integration
+
 ## v0.4.4
 
 ### Fixes
 
 - Run Actions Processsing job on multiple GPUs.
-
 
 ## v0.4.3
 
