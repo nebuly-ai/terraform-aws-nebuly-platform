@@ -1,5 +1,11 @@
 # Changelog
 
+# v0.5.1
+
+### Minor fixes
+
+- Missing ClusterIssuer in Helm values default configuration.
+
 ## v0.5.0
 
 ### Features
