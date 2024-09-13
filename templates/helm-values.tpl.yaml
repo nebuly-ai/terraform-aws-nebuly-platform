@@ -10,6 +10,13 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: ${eks_iam_role_arn}
 
+# Cert-manager issuer.
+# Remove this section if you're not using cert-manager for SSL certificates.
+clusterIssuer:
+  enabled: true
+  name: letsencrypt
+  email: support@nebuly.ai
+
 backend:
   image:
     repository: "ghcr.io/nebuly-ai/nebuly-backend"
