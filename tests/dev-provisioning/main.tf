@@ -72,7 +72,7 @@ module "main" {
 
   eks_cloudwatch_observability_enabled = true
   eks_cluster_endpoint_public_access   = true
-  eks_kubernetes_version               = "1.28"
+  eks_kubernetes_version               = "1.29"
   allowed_inbound_cidr_blocks = {
     "all" : "0.0.0.0/0"
   }

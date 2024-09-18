@@ -51,13 +51,13 @@ data "aws_security_group" "default" {
 # ------ Main ------ #
 module "main" {
   source  = "nebuly-ai/nebuly-platform/aws"
-  version = "0.5.0"
+  version = "0.5.1"
 
   security_group = data.aws_security_group.default
 
   eks_cloudwatch_observability_enabled = true
   eks_cluster_endpoint_public_access   = true
-  eks_kubernetes_version               = "1.28"
+  eks_kubernetes_version               = "1.29"
   allowed_inbound_cidr_blocks          = {}
 
   rds_multi_availability_zone_enabled = false
