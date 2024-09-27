@@ -24,6 +24,60 @@ For configuration examples, you can refer to the [Examples](#examples).
 
 Once the Terraform changes are applied, proceed with the next steps to deploy Nebuly on the provisioned Elastic Kubernetes Service (EKS) cluster.
 
+<details>
+<summary>Required IAM Policies</summary>
+
+The following are the IAM policies required by the IAM users used to run the Terraform scripts:
+- **AmazonRDSFullAccess**
+- **AmazonS3FullAccess:**
+- **AmazonEKSClusterPolicy**
+- **AmazonEKSServicePolicy**
+- **SecretsManagerReadWrite**
+- **CloudWatchFullAccess**
+- **AmazonVPCFullAccess**
+
+</details>
+
+<details>
+<summary>Required EKS Custom Policy</summary>
+
+```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateLaunchTemplate",
+                "ec2:DeleteLaunchTemplate",
+                "ec2:DescribeLaunchTemplates",
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:RunInstances",
+                "kms:TagResource",
+                "eks:*",
+                "kms:CreateKey",
+                "kms:CreateAlias",
+                "kms:DeleteAlias",
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:CreatePolicy",
+                "iam:DeletePolicy",
+                "iam:AttachRolePolicy",
+                "iam:PutRolePolicy",
+                "iam:GetRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:DeleteRolePolicy"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+```
+
+</details>
+
 ### 2. Connect to the EKS cluster
 
 Prerequisites: install the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
