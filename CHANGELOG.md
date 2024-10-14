@@ -1,5 +1,10 @@
 # Changelog
 
+# v0.6.0
+
+- Use gp3 for EBS volumes of EKS nodes.
+- Encrypt EBS volumes of EKS nodes.
+
 # v0.5.1
 
 ### Minor fixes
