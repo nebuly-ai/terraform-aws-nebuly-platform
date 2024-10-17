@@ -249,7 +249,8 @@ variable "eks_managed_node_group_defaults" {
           encrypted             = true
         }
       }
-  } }
+    }
+  }
 }
 variable "eks_managed_node_groups" {
   description = "The managed node groups of the EKS cluster."

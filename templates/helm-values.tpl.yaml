@@ -100,7 +100,7 @@ lionLinguist:
 
   modelsCache:
     enabled: true
-    storageClassName: gp2-csi
+    storageClassName: gp3-csi
     accessModes:
       - ReadWriteOnce
 
@@ -187,13 +187,13 @@ kafka:
   zookeeper:
     replicas: 1
     storage:
-      class: gp2-csi
+      class: gp3-csi
   replicas: 1
   config:
     offsets.topic.replication.factor: 1
     replica.selector.class: org.apache.kafka.common.replica.RackAwareReplicaSelector
   storage:
-    class: gp2-csi
+    class: gp3-csi
     size: 32Gi
   resources:
     limits:
