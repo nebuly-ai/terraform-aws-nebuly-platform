@@ -1,5 +1,9 @@
 # Changelog
 
+# v0.6.1
+
+- Use gpt3-csi as default storage class
+
 # v0.6.0
 
 - Use gp3 for EBS volumes of EKS nodes.
