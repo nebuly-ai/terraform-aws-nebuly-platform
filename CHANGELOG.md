@@ -1,5 +1,9 @@
 # Changelog
 
+# v0.6.2
+
+- Default resource limits for lion linguist service
+
 # v0.6.1
 
 - Use gpt3-csi as default storage class
