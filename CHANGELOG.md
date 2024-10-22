@@ -1,5 +1,9 @@
 # Changelog
 
+# v0.7.0
+
+- New Helm templates
+
 # v0.6.2
 
 - Default resource limits for lion linguist service
