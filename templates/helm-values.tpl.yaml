@@ -78,9 +78,6 @@ eventIngestion:
         hosts:
           - ${platform_domain}
 
-azureml:
-  enabled: false
-
 aiModels:
   registry: aws_s3
   aws:
