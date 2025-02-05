@@ -57,7 +57,7 @@ module "main" {
 
   eks_cloudwatch_observability_enabled = true
   eks_cluster_endpoint_public_access   = true
-  eks_kubernetes_version               = "1.29"
+  eks_kubernetes_version               = "1.31"
   allowed_inbound_cidr_blocks          = {}
 
   rds_multi_availability_zone_enabled = false

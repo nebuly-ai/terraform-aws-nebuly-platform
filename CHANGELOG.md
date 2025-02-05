@@ -1,5 +1,10 @@
 # Changelog
 
+# v0.8.0
+
+- Add optional EKS prefix delegation (variable `eks_enable_prefix_delegation`)
+- Update default Kubernetes version used in examples to 1.31
+
 # v0.7.0
 
 - New Helm templates

@@ -365,3 +365,15 @@ variable "eks_cluster_admin_arns" {
   type        = set(string)
   default     = []
 }
+variable "eks_enable_prefix_delegation" {
+  description = <<EOT
+  If true, enable the prefix delegation for the EKS cluster to increase the 
+  number of available IP addresses for the pods.
+
+  This should be enabled only if the cluster subnet have limited IP addresses available.
+
+  For more information, see: https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html.
+  EOT
+  type        = bool
+  default     = false
+}
