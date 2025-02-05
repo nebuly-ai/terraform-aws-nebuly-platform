@@ -72,7 +72,7 @@ module "main" {
 
   eks_cloudwatch_observability_enabled = true
   eks_cluster_endpoint_public_access   = true
-  eks_kubernetes_version               = "1.29"
+  eks_kubernetes_version               = "1.31"
   allowed_inbound_cidr_blocks = {
     "all" : "0.0.0.0/0"
   }
@@ -95,6 +95,7 @@ module "main" {
     type             = "gp2"
   }
   rds_create_db_subnet_group = true
+  eks_cluster_admin_arns     = []
 
   create_security_group_rules = true
   vpc_id                      = data.aws_vpc.default.id
@@ -106,8 +107,10 @@ module "main" {
   openai_endpoint             = "https://test.nebuly.com"
   openai_api_key              = "test"
 
-  nebuly_credentials          = var.nebuly_credentials
-  platform_domain             = "platform.aws.testing.nebuly.com"
+  nebuly_credentials = var.nebuly_credentials
+  platform_domain    = "platform.aws.testing.nebuly.com"
+
+  eks_enable_prefix_delegation = true
 }
 
 
@@ -121,14 +124,14 @@ output "eks_cluster_get_credentials" {
   value       = module.main.eks_cluster_get_credentials
 }
 output "helm_values" {
-  value = module.main.helm_values
+  value     = module.main.helm_values
   sensitive = true
 }
 output "helm_values_bootstrap" {
-  value = module.main.helm_values_bootstrap
+  value     = module.main.helm_values_bootstrap
   sensitive = true
 }
 output "secret_provider_class" {
-  value = module.main.secret_provider_class
+  value     = module.main.secret_provider_class
   sensitive = true
 }

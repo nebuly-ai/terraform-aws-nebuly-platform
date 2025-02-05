@@ -245,6 +245,12 @@ resource "aws_secretsmanager_secret_version" "rds_auth_password" {
 
 ### ----------- EKS ----------- ###
 locals {
+  _vpc_cni_config_values = var.eks_enable_prefix_delegation ? jsonencode({
+    env = {
+      ENABLE_PREFIX_DELEGATION = "true"
+      WARM_PREFIX_TARGET       = "1"
+    }
+  }) : null
   base_cluster_addons = {
     coredns = {
       most_recent = true
@@ -253,7 +259,9 @@ locals {
       most_recent = true
     }
     vpc-cni = {
-      most_recent = true
+      most_recent          = true
+      before_compute       = var.eks_enable_prefix_delegation
+      configuration_values = local._vpc_cni_config_values
     }
     aws-ebs-csi-driver = {
       most_recent = true
