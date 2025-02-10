@@ -71,7 +71,10 @@ module "main" {
     client_secret = "<your-nebuly-client-secret>"
   }
 
-  vpc_id          = data.aws_vpc.default.id
+  vpc_id = data.aws_vpc.default.id
+  # Create the security group rules for allowing EKS pods to communicate with the RDS instance
+  create_security_group_rules = true
+
   region          = var.region
   subnet_ids      = data.aws_subnets.default.ids
   resource_prefix = "nebuly"

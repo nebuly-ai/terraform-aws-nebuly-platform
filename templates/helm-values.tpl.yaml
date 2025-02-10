@@ -91,28 +91,6 @@ aiModels:
         clientIdKey: ${k8s_secret_key_nebuly_client_id}
         clientSecretKey: ${k8s_secret_key_nebuly_client_secret}
 
-lionLinguist:
-  image:
-    repository: "ghcr.io/nebuly-ai/nebuly-lion-linguist"
-
-  modelsCache:
-    enabled: true
-    storageClassName: gp3-csi
-    accessModes:
-      - ReadWriteOnce
-
-  volumeMounts:
-    - name: secrets-store
-      mountPath: /mnt/secrets-store
-      readOnly: true
-  volumes:
-    - name: secrets-store
-      csi:
-        driver: secrets-store.csi.k8s.io
-        readOnly: true
-        volumeAttributes:
-          secretProviderClass: ${secret_provider_class_name}
-
 ingestionWorker:
   image:
     repository: "ghcr.io/nebuly-ai/nebuly-ingestion-worker"
@@ -155,16 +133,6 @@ primaryProcessing:
 
 secondaryProcessing:
   schedule: "0 2 * * *" # Every day at 2:00 AM, cluster's timezone
-
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: nebuly.com/accelerator
-                operator: In
-                values:
-                  - nvidia-tesla-t4
 
   tolerations:
     - effect: NoSchedule
