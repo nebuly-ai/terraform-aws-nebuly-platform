@@ -1,5 +1,11 @@
 # Changelog
 
+# v0.9.0
+
+- Update generated `values.yaml` for Nebuly Platform Helm chart to version 1.27.0
+- Remove NVIDIA T4 Node Pool (not needed anymore from Nebuly version 1.27.0)
+- Add Kubernetes and RDS versions validation
+
 # v0.8.0
 
 - Add optional EKS prefix delegation (variable `eks_enable_prefix_delegation`)
