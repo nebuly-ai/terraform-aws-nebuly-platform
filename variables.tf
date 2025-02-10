@@ -120,6 +120,11 @@ variable "rds_postgres_version" {
   description = "The PostgreSQL version to use for the RDS instances."
   type        = string
   default     = "16"
+
+  validation {
+    condition     = contains(["16", "15"], var.rds_postgres_version)
+    error_message = "allowed versions are 16, 15"
+  }
 }
 variable "rds_postgres_family" {
   description = "The PostgreSQL family to use for the RDS instances."
@@ -211,6 +216,10 @@ variable "rds_auth_storage" {
 variable "eks_kubernetes_version" {
   description = "Specify which Kubernetes release to use."
   type        = string
+  validation {
+    condition     = can(regex("1.32|1.31|1.30", var.eks_kubernetes_version))
+    error_message = "allowed versions are 1.32, 1.31, 1.30"
+  }
 }
 variable "eks_cluster_endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled."
