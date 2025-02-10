@@ -278,26 +278,6 @@ variable "eks_managed_node_groups" {
       max_size       = 1
       desired_size   = 1
     }
-    "gpu-t4" : {
-      instance_types = ["g4dn.xlarge"]
-      ami_type       = "AL2_x86_64_GPU"
-      disk_size_gb   = 128
-      min_size       = 0
-      max_size       = 1
-      desired_size   = 1
-
-      labels = {
-        "nvidia.com/gpu.present" : "true",
-        "nebuly.com/accelerator" : "nvidia-tesla-t4",
-      }
-      taints = [
-        {
-          key : "nvidia.com/gpu"
-          value : ""
-          effect : "NO_SCHEDULE"
-        }
-      ]
-    }
     "gpu-a10" : {
       instance_types = ["g5.12xlarge"]
       ami_type       = "AL2_x86_64_GPU"
