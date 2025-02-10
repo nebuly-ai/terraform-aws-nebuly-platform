@@ -112,6 +112,15 @@ content: |-
   Create a Kubernetes [Image Pull Secret](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) for 
   authenticating with your Docker registry and pulling the Nebuly Docker images.
 
+  Example:
+
+  ```shell
+  kubectl create secret generic nebuly-docker-pull \
+    -n nebuly \    
+    --from-file=.dockerconfigjson=dockerconfig.json \
+    --type=kubernetes.io/dockerconfigjson
+  ```
+
   ### 4. Bootstrap EKS cluster
 
   Retrieve the auto-generated values from the Terraform outputs and save them to a file named `values-bootstrap.yaml`:
@@ -183,6 +192,17 @@ content: |-
   You can then register a DNS CNAME record pointing to the Load Balancer DNS name to access Nebuly via the custom domain you provided 
   in the input variable `platform_domain`.
 
+
+  ## Post-installation
+  You can upgrade the Nebuly Platform Helm chart by running the following command:
+
+  ```shell
+  helm upgrade <your-release-name> oci://ghcr.io/nebuly-ai/helm-charts/nebuly-platform \
+    --namespace nebuly \
+    -f values.yaml \ 
+    -- version=<version> \ 
+    --timeout 30m
+  ```
 
   ## Examples
 
