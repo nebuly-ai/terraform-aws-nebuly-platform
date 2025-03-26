@@ -1,5 +1,9 @@
 # Changelog
 
+# Unreleased
+
+- Google SSO
+
 # v0.9.0
 
 - Update generated `values.yaml` for Nebuly Platform Helm chart to version 1.27.0

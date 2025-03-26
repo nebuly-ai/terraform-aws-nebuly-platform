@@ -514,6 +514,26 @@ resource "aws_secretsmanager_secret_version" "okta_sso_credentials" {
     }
   )
 }
+resource "aws_secretsmanager_secret" "google_sso_credentials" {
+  count = var.google_sso == null ? 0 : 1
+
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-google-sso-credentials-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-google-sso-credentials", var.resource_prefix)
+  )
+}
+resource "aws_secretsmanager_secret_version" "google_sso_credentials" {
+  count = var.google_sso == null ? 0 : 1
+
+  secret_id = aws_secretsmanager_secret.google_sso_credentials[0].id
+  secret_string = jsonencode(
+    {
+      "client_id" : var.google_sso.client_id
+      "client_secret" : var.google_sso.client_secret
+    }
+  )
+}
 
 
 
@@ -535,16 +555,18 @@ locals {
   secret_provider_class_secret_name = "nebuly-platform-credentials"
 
   # k8s secrets keys
-  k8s_secret_key_analytics_db_username  = "analytics-db-username"
-  k8s_secret_key_analytics_db_password  = "analytics-db-password"
-  k8s_secret_key_auth_db_username       = "auth-db-username"
-  k8s_secret_key_auth_db_password       = "auth-db-password"
-  k8s_secret_key_jwt_signing_key        = "jwt-signing-key"
-  k8s_secret_key_openai_api_key         = "openai-api-key"
-  k8s_secret_key_nebuly_client_id       = "nebuly-azure-client-id"
-  k8s_secret_key_nebuly_client_secret   = "nebuly-azure-client-secret"
-  k8s_secret_key_okta_sso_client_id     = "okta-sso-client-id"
-  k8s_secret_key_okta_sso_client_secret = "okta-sso-client-secret"
+  k8s_secret_key_analytics_db_username    = "analytics-db-username"
+  k8s_secret_key_analytics_db_password    = "analytics-db-password"
+  k8s_secret_key_auth_db_username         = "auth-db-username"
+  k8s_secret_key_auth_db_password         = "auth-db-password"
+  k8s_secret_key_jwt_signing_key          = "jwt-signing-key"
+  k8s_secret_key_openai_api_key           = "openai-api-key"
+  k8s_secret_key_nebuly_client_id         = "nebuly-azure-client-id"
+  k8s_secret_key_nebuly_client_secret     = "nebuly-azure-client-secret"
+  k8s_secret_key_okta_sso_client_id       = "okta-sso-client-id"
+  k8s_secret_key_okta_sso_client_secret   = "okta-sso-client-secret"
+  k8s_secret_key_google_sso_client_id     = "google-sso-client-id"
+  k8s_secret_key_google_sso_client_secret = "google-sso-client-secret"
 
   bootstrap_helm_values = templatefile(
     "${path.module}/templates/helm-values-bootstrap.tpl.yaml",
@@ -580,6 +602,11 @@ locals {
       okta_sso_issuer                       = var.okta_sso != null ? var.okta_sso.issuer : ""
       k8s_secret_key_okta_sso_client_id     = local.k8s_secret_key_okta_sso_client_id
       k8s_secret_key_okta_sso_client_secret = local.k8s_secret_key_okta_sso_client_secret
+
+      google_sso_enabled                      = var.google_sso != null
+      google_sso_role_mapping                 = var.google_sso != null ? join(",", [for role, group in var.google_sso.role_mapping : "${role}:${group}"]) : ""
+      k8s_secret_key_google_sso_client_id     = local.k8s_secret_key_google_sso_client_id
+      k8s_secret_key_google_sso_client_secret = local.k8s_secret_key_google_sso_client_secret
 
       s3_bucket_name = aws_s3_bucket.ai_models.bucket
 
