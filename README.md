@@ -184,7 +184,7 @@ You can upgrade the Nebuly Platform Helm chart by running the following command:
 helm upgrade <your-release-name> oci://ghcr.io/nebuly-ai/helm-charts/nebuly-platform \
   --namespace nebuly \
   -f values.yaml \ 
-  --version=<version> \ 
+  -- version=<version> \ 
   --timeout 30m
 ```
 
