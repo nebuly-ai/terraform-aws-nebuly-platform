@@ -34,7 +34,7 @@ backend:
       - host: ${platform_domain}
         paths:
           - path: /backend(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
     tls:
       - secretName: nebuly-tls
         hosts:
@@ -72,7 +72,7 @@ eventIngestion:
       - host: ${platform_domain}
         paths:
           - path: /event-ingestion(/|$)(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
     tls:
       - secretName: nebuly-tls
         hosts:
@@ -242,7 +242,7 @@ auth:
       - host: ${platform_domain}
         paths:
           - path: "/backend/auth(/|$)(.*)"
-            pathType: Prefix
+            pathType: ImplementationSpecific
     tls:
       - secretName: nebuly-tls
         hosts:
