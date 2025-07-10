@@ -107,6 +107,24 @@ ingestionWorker:
         volumeAttributes:
           secretProviderClass: ${secret_provider_class_name}
 
+clickhouse:
+  enabled: true
+  storage:
+    storageClassName: gp3-csi
+  tolerations:
+    - effect: NoSchedule
+      key: nebuly.com/reserved
+      operator: Equal
+      value: clickhouse 
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: nebuly.com/reserved
+                operator: In
+                values:
+                  - clickhouse
 
 primaryProcessing:
   schedule: "0 23 * * *" # Every day at 11:00 PM, cluster's timezone
@@ -126,14 +144,6 @@ primaryProcessing:
                 operator: In
                 values:
                   - nvidia-ampere-a10
-  tolerations:
-    - effect: NoSchedule
-      key: nvidia.com/gpu
-      operator: Exists
-
-secondaryProcessing:
-  schedule: "0 2 * * *" # Every day at 2:00 AM, cluster's timezone
-
   tolerations:
     - effect: NoSchedule
       key: nvidia.com/gpu

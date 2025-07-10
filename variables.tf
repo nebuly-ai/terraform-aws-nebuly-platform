@@ -296,6 +296,23 @@ variable "eks_managed_node_groups" {
       max_size       = 1
       desired_size   = 1
     }
+    "ch-01" : {
+      instance_types = ["r7g.xlarge"]
+      ami_type       = "AL2_ARM_64"
+      min_size       = 1
+      max_size       = 1
+      desired_size   = 1
+      labels = {
+        "nvidia.com/reserved" : "clickhouse",
+      }
+      taints = [
+        {
+          key : "nebuly.com/reserved"
+          value : "clickhouse"
+          effect : "NO_SCHEDULE"
+        }
+      ]
+    }
     "gpu-a10" : {
       instance_types = ["g5.12xlarge"]
       ami_type       = "AL2_x86_64_GPU"
