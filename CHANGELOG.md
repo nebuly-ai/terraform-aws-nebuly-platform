@@ -1,8 +1,9 @@
 # Changelog
 
-# Unreleased
+# v0.10.0
 
 - Google SSO
+- ClickHouse
 
 # v0.9.0
 
