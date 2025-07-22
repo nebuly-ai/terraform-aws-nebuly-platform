@@ -116,6 +116,12 @@ clickhouse:
       key: nebuly.com/reserved
       operator: Equal
       value: clickhouse 
+  backups:
+    enabled: true
+    remoteStorage: aws_s3
+    aws:
+      bucketName: ${clickhouse_backups_s3_bucket_name}
+
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:

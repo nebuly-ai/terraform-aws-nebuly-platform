@@ -303,7 +303,7 @@ variable "eks_managed_node_groups" {
       max_size       = 1
       desired_size   = 1
       labels = {
-        "nvidia.com/reserved" : "clickhouse",
+        "nebuly.com/reserved" : "clickhouse",
       }
       taints = [
         {

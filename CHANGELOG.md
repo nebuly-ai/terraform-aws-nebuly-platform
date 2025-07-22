@@ -1,5 +1,9 @@
 # Changelog
 
+# v0.11.0
+
+- ClickHouse backups S3 bucket
+
 # v0.10.0
 
 - Google SSO

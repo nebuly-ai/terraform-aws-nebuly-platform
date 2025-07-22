@@ -542,9 +542,17 @@ resource "aws_s3_bucket" "ai_models" {
   bucket_prefix = format("%s-%s", var.resource_prefix, "ai-models")
   tags          = var.tags
 }
-resource "aws_iam_role_policy_attachment" "ai_models__eks_reader" {
+resource "aws_iam_role_policy_attachment" "ai_models__eks_access" {
   role       = module.eks_iam_role.iam_role_name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Attach the read-only S3 access policy
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+resource "aws_s3_bucket" "backups" {
+  bucket_prefix = format("%s-%s", var.resource_prefix, "backups")
+  tags          = var.tags
+}
+resource "aws_iam_role_policy_attachment" "backups__eks_access" {
+  role       = module.eks_iam_role.iam_role_name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 
@@ -608,7 +616,8 @@ locals {
       k8s_secret_key_google_sso_client_id     = local.k8s_secret_key_google_sso_client_id
       k8s_secret_key_google_sso_client_secret = local.k8s_secret_key_google_sso_client_secret
 
-      s3_bucket_name = aws_s3_bucket.ai_models.bucket
+      s3_bucket_name                    = aws_s3_bucket.ai_models.bucket
+      clickhouse_backups_s3_bucket_name = aws_s3_bucket.backups.bucket
 
       analytics_postgres_server_url = module.rds_postgres_analytics.db_instance_address
       analytics_postgres_db_name    = "analytics"
