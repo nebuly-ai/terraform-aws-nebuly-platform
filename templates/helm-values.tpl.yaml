@@ -121,6 +121,7 @@ clickhouse:
     remoteStorage: aws_s3
     aws:
       bucketName: ${clickhouse_backups_s3_bucket_name}
+      region: ${aws_region}
 
   affinity:
     nodeAffinity:
