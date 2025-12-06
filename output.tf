@@ -37,6 +37,7 @@ output "analytics_db" {
     username             = module.rds_postgres_analytics.db_instance_username
     password_secret_name = aws_secretsmanager_secret.rds_analytics_credentials.name
   }
+  sensitive = true
 }
 output "analytics_db_credentials" {
   description = "Credentials for connecting with the analytics DB."
@@ -55,6 +56,7 @@ output "auth_db" {
     username             = module.rds_postgres_auth.db_instance_username
     password_secret_name = aws_secretsmanager_secret.rds_auth_credentials.name
   }
+  sensitive = true
 }
 output "auth_db_credentials" {
   description = "Credentials for connecting with the auth DB."

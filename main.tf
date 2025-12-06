@@ -327,6 +327,7 @@ module "eks" {
       use_custom_launch_template = obj.use_custom_launch_template
       launch_template_tags       = obj.tags
 
+      enable_monitoring = true
 
       iam_role_additional_policies = {
         # Needed by the aws-ebs-csi-driver
