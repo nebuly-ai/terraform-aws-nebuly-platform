@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~>5.45"
+      version = "~>6.23.0"
     }
     null = {
       source  = "hashicorp/null"
@@ -72,7 +72,7 @@ module "main" {
 
   eks_cloudwatch_observability_enabled = true
   eks_cluster_endpoint_public_access   = true
-  eks_kubernetes_version               = "1.31"
+  eks_kubernetes_version               = "1.32"
   allowed_inbound_cidr_blocks = {
     "all" : "0.0.0.0/0"
   }

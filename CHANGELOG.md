@@ -1,5 +1,13 @@
 # Changelog
 
+# v0.12.0
+
+- Upgrade EKS node groups to Amazon Linux 2023 (AL2023). \
+This moves all managed node groups off Amazon Linux 2, aligning with AWS’s current, supported EKS AMI track. \
+**Note**: The upgrade requires node group replacement, so instances are rolled in a blue/green fashion via new Auto Scaling Groups.
+- `managed_group_defaults` is no longer a standalone variable.
+It has been moved under `managed_groups` and should now be configured inline per managed group.
+
 # v0.11.0
 
 - ClickHouse backups S3 bucket

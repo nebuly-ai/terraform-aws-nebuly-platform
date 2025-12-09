@@ -8,7 +8,7 @@ tags = {
 
 
 ### EKS ###
-eks_kubernetes_version             = "1.31"
+eks_kubernetes_version             = "1.32"
 eks_cluster_endpoint_public_access = true
 
 ### External secrets ###

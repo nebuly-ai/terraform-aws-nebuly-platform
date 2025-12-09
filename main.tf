@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~>5.45"
+      version = "~>6.23.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -263,8 +263,20 @@ locals {
       before_compute       = var.eks_enable_prefix_delegation
       configuration_values = local._vpc_cni_config_values
     }
+    eks-pod-identity-agent = {
+      before_compute = true
+      most_recent    = true
+    }
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent       = true
+      resolve_conflicts = "OVERWRITE"
+
+      pod_identity_association = [
+        {
+          role_arn        = aws_iam_role.ebs_csi.arn
+          service_account = "ebs-csi-controller-sa"
+        }
+      ]
     }
     aws-efs-csi-driver = {
       most_recent = true
@@ -273,21 +285,21 @@ locals {
 }
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~>20.8.5"
+  version = "~>21.10.1"
 
-  cluster_name    = local.eks_cluster_name
-  cluster_version = var.eks_kubernetes_version
+  name               = local.eks_cluster_name
+  kubernetes_version = var.eks_kubernetes_version
 
   vpc_id                   = var.vpc_id
   subnet_ids               = var.subnet_ids
   control_plane_subnet_ids = var.subnet_ids
 
-  cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
+  endpoint_public_access = var.eks_cluster_endpoint_public_access
 
   enable_cluster_creator_admin_permissions = var.eks_enable_cluster_creator_admin_permissions
   access_entries                           = local.eks_cluster_admin_access_entries
 
-  cluster_addons = merge(
+  addons = merge(
     local.base_cluster_addons,
     var.eks_cloudwatch_observability_enabled == true ? {
       amazon-cloudwatch-observability = {
@@ -295,8 +307,6 @@ module "eks" {
       }
     } : {}
   )
-
-  eks_managed_node_group_defaults = var.eks_managed_node_group_defaults
 
   eks_managed_node_groups = {
     for k, obj in var.eks_managed_node_groups : k => {
@@ -306,16 +316,18 @@ module "eks" {
       instance_types = obj.instance_types
       taints         = obj.taints
 
-      min_size     = obj.min_size
-      max_size     = obj.max_size
-      desired_size = obj.desired_size
-      subnet_ids   = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
-      ami_type     = obj.ami_type
-      disk_size    = obj.disk_size_gb
+      min_size              = obj.min_size
+      max_size              = obj.max_size
+      desired_size          = obj.desired_size
+      subnet_ids            = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
+      ami_type              = obj.ami_type
+      block_device_mappings = obj.block_device_mappings
+      disk_size             = obj.disk_size_gb
 
       use_custom_launch_template = obj.use_custom_launch_template
       launch_template_tags       = obj.tags
 
+      enable_monitoring = true
 
       iam_role_additional_policies = {
         # Needed by the aws-ebs-csi-driver
@@ -536,6 +548,24 @@ resource "aws_secretsmanager_secret_version" "google_sso_credentials" {
 }
 
 
+# ---------- Needed by EKS EBS add-on ----------- #
+resource "aws_iam_role" "ebs_csi" {
+  name = "AmazonEKS_EBS_CSI_DriverRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "pods.eks.amazonaws.com" }
+      Action    = ["sts:AssumeRole", "sts:TagSession"]
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ebs_csi_attach" {
+  role       = aws_iam_role.ebs_csi.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
 
 # ----------- S3 Storage ----------- #
 resource "aws_s3_bucket" "ai_models" {

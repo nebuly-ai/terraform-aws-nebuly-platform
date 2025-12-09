@@ -249,45 +249,34 @@ variable "eks_cloudwatch_observability_enabled" {
   type        = bool
   default     = false
 }
-variable "eks_managed_node_group_defaults" {
-  description = "The default settings of the EKS managed node groups."
-  type = object({
-    ami_type              = string
-    block_device_mappings = map(any)
-  })
-  default = {
-    ami_type = "AL2_x86_64"
-    block_device_mappings = {
-      sdc = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size           = 128
-          volume_type           = "gp3"
-          delete_on_termination = true
-          encrypted             = true
-        }
-      }
-    }
-  }
-}
+
 variable "eks_managed_node_groups" {
   description = "The managed node groups of the EKS cluster."
   type = map(object({
-    instance_types             = set(string)
-    min_size                   = number
-    max_size                   = number
-    desired_size               = optional(number)
-    subnet_ids                 = optional(list(string), null)
-    ami_type                   = optional(string, "AL2_x86_64")
+    instance_types = set(string)
+    min_size       = number
+    max_size       = number
+    desired_size   = optional(number)
+    subnet_ids     = optional(list(string), null)
+    ami_type       = optional(string, "AL2023_x86_64_STANDARD")
+    block_device_mappings = optional(map(object({
+      device_name = optional(string, "/dev/xvda")
+      ebs = optional(object({
+        delete_on_termination = optional(bool)
+        encrypted             = optional(bool, true)
+        volume_size           = optional(number, 128)
+        volume_type           = optional(string, "gp3")
+      }))
+    })))
     disk_size_gb               = optional(number, 128)
     tags                       = optional(map(string), {})
     use_custom_launch_template = optional(bool, true)
     labels                     = optional(map(string), {})
-    taints = optional(set(object({
-      key : string
-      value : string
-      effect : string
-    })), [])
+    taints = optional(map(object({
+      key    = string
+      value  = optional(string)
+      effect = string
+    })))
   }))
   default = {
     "workers" : {
@@ -295,31 +284,65 @@ variable "eks_managed_node_groups" {
       min_size       = 1
       max_size       = 1
       desired_size   = 1
+      block_device_mappings = {
+        sdc = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 128
+            volume_type           = "gp3"
+            delete_on_termination = true
+            encrypted             = true
+          }
+        }
+      }
     }
     "ch-01" : {
       instance_types = ["r7g.xlarge"]
-      ami_type       = "AL2_ARM_64"
+      ami_type       = "AL2023_ARM_64_STANDARD"
       min_size       = 1
       max_size       = 1
       desired_size   = 1
+      block_device_mappings = {
+        sdc = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 128
+            volume_type           = "gp3"
+            delete_on_termination = true
+            encrypted             = true
+          }
+        }
+      }
       labels = {
         "nebuly.com/reserved" : "clickhouse",
       }
-      taints = [
-        {
-          key : "nebuly.com/reserved"
+      taints = {
+        clickhouse = {
+          key = "nebuly.com/reserved"
           value : "clickhouse"
-          effect : "NO_SCHEDULE"
+          effect = "NO_SCHEDULE"
         }
-      ]
+      }
     }
     "gpu-a10" : {
       instance_types = ["g5.12xlarge"]
-      ami_type       = "AL2_x86_64_GPU"
+      ami_type       = "AL2023_x86_64_NVIDIA"
       min_size       = 0
       max_size       = 1
       desired_size   = 0
       disk_size_gb   = 128
+
+      block_device_mappings = {
+        sdc = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 128
+            volume_type           = "gp3"
+            delete_on_termination = true
+            encrypted             = true
+          }
+        }
+      }
 
       labels = {
         "nvidia.com/gpu.present" : "true",
@@ -328,13 +351,12 @@ variable "eks_managed_node_groups" {
       tags = {
         "k8s.io/cluster-autoscaler/enabled" : "true",
       }
-      taints = [
-        {
-          key : "nvidia.com/gpu"
-          value : ""
-          effect : "NO_SCHEDULE"
+      taints = {
+        gpu = {
+          key    = "nvidia.com/gpu"
+          effect = "NO_SCHEDULE"
         }
-      ]
+      }
     }
   }
 }
