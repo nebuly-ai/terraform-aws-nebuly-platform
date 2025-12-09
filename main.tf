@@ -268,7 +268,7 @@ locals {
       most_recent    = true
     }
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent       = true
       resolve_conflicts = "OVERWRITE"
 
       pod_identity_association = [
@@ -316,13 +316,13 @@ module "eks" {
       instance_types = obj.instance_types
       taints         = obj.taints
 
-      min_size     = obj.min_size
-      max_size     = obj.max_size
-      desired_size = obj.desired_size
-      subnet_ids   = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
-      ami_type     = obj.ami_type
+      min_size              = obj.min_size
+      max_size              = obj.max_size
+      desired_size          = obj.desired_size
+      subnet_ids            = obj.subnet_ids == null ? var.subnet_ids : obj.subnet_ids
+      ami_type              = obj.ami_type
       block_device_mappings = obj.block_device_mappings
-      disk_size    = obj.disk_size_gb
+      disk_size             = obj.disk_size_gb
 
       use_custom_launch_template = obj.use_custom_launch_template
       launch_template_tags       = obj.tags
@@ -555,9 +555,9 @@ resource "aws_iam_role" "ebs_csi" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
+      Effect    = "Allow"
       Principal = { Service = "pods.eks.amazonaws.com" }
-      Action = ["sts:AssumeRole", "sts:TagSession"]
+      Action    = ["sts:AssumeRole", "sts:TagSession"]
     }]
   })
 }
