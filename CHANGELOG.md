@@ -1,5 +1,9 @@
 # Changelog
 
+# v0.13.0
+
+- Add possibility to use existing ACM certificates instead of Lets Encrypt
+
 # v0.12.0
 
 - Upgrade EKS node groups to Amazon Linux 2023 (AL2023). \

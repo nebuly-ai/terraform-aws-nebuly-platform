@@ -59,6 +59,8 @@ locals {
 
   rds_instance_name_analytics = "${var.resource_prefix}platformanalytics"
   rds_instance_name_auth      = "${var.resource_prefix}platformauth"
+
+  acm_certificate_arn = var.acm_certificate_arn == null ? "" : trimspace(var.acm_certificate_arn)
 }
 
 
@@ -586,7 +588,6 @@ resource "aws_iam_role_policy_attachment" "backups__eks_access" {
 }
 
 
-
 # ------ Post provisioning ------ #
 locals {
   secret_provider_class_name        = "nebuly-platform"
@@ -609,9 +610,10 @@ locals {
   bootstrap_helm_values = templatefile(
     "${path.module}/templates/helm-values-bootstrap.tpl.yaml",
     {
-      eks_region       = var.region
-      eks_cluster_name = local.eks_cluster_name
-      eks_iam_role_arn = module.eks_iam_role.iam_role_arn
+      eks_region          = var.region
+      eks_cluster_name    = local.eks_cluster_name
+      eks_iam_role_arn    = module.eks_iam_role.iam_role_arn
+      acm_certificate_arn = local.acm_certificate_arn
     }
   )
   helm_values = templatefile(
@@ -655,6 +657,8 @@ locals {
       auth_postgres_server_url      = module.rds_postgres_auth.db_instance_address
       auth_postgres_db_name         = "auth"
       eks_iam_role_arn              = module.eks_iam_role.iam_role_arn
+
+      acm_certificate_arn = local.acm_certificate_arn
     },
   )
   secret_provider_class = templatefile(

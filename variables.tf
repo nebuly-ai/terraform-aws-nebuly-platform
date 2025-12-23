@@ -414,3 +414,20 @@ variable "eks_enable_prefix_delegation" {
   type        = bool
   default     = false
 }
+
+### Certificates ###
+variable "acm_certificate_arn" {
+  type        = string
+  default     = null
+  description = "If set, use AWS NLB TLS termination with this ACM cert ARN"
+
+  validation {
+    condition = (
+      var.acm_certificate_arn == null
+      || length(trimspace(var.acm_certificate_arn)) == 0
+      || can(regex("^arn:aws:acm:[a-z0-9-]+:\\d{12}:certificate\\/[0-9a-f-]+$", trimspace(var.acm_certificate_arn)))
+    )
+    error_message = "acm_certificate_arn must be a valid ACM certificate ARN, e.g. arn:aws:acm:eu-west-1:123456789012:certificate/<uuid>."
+  }
+}
+
