@@ -10,12 +10,14 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: ${eks_iam_role_arn}
 
+%{ if length(trimspace(acm_certificate_arn)) == 0 }
 # Cert-manager issuer.
 # Remove this section if you're not using cert-manager for SSL certificates.
 clusterIssuer:
   enabled: true
   name: letsencrypt
   email: support@nebuly.ai
+%{ endif }
 
 backend:
   image:
@@ -23,11 +25,13 @@ backend:
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+      %{ if length(trimspace(acm_certificate_arn)) == 0 }
       # ------------
       # Cert-manager issuer.
       # Remove this section if you're not using cert-manager for SSL certificates.
       cert-manager.io/cluster-issuer: letsencrypt
       # ------------
+      %{ endif }
     enabled: true
     className: "nginx"
     hosts:
@@ -35,10 +39,12 @@ backend:
         paths:
           - path: /backend(/|$)(.*)
             pathType: ImplementationSpecific
+    %{ if length(trimspace(acm_certificate_arn)) == 0 }
     tls:
       - secretName: nebuly-tls
         hosts:
           - ${platform_domain}
+    %{ endif }
 
   volumeMounts:
     - name: secrets-store
@@ -61,11 +67,13 @@ eventIngestion:
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+      %{ if length(trimspace(acm_certificate_arn)) == 0 }
       # ------------
       # Cert-manager issuer.
       # Remove this section if you're not using cert-manager for SSL certificates.
       cert-manager.io/cluster-issuer: letsencrypt
       # ------------
+      %{ endif }
     enabled: true
     className: "nginx"
     hosts:
@@ -73,10 +81,12 @@ eventIngestion:
         paths:
           - path: /event-ingestion(/|$)(.*)
             pathType: ImplementationSpecific
+    %{ if length(trimspace(acm_certificate_arn)) == 0 }
     tls:
       - secretName: nebuly-tls
         hosts:
           - ${platform_domain}
+    %{ endif }
 
 aiModels:
   registry: aws_s3
@@ -209,8 +219,8 @@ auth:
   microsoft:
     enabled: false
 
-  # Optional Okta SSO
   %{ if okta_sso_enabled }
+  # Optional Okta SSO
   okta:
     enabled: ${okta_sso_enabled}
     issuer: ${okta_sso_issuer}
@@ -248,11 +258,13 @@ auth:
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: "/auth/$2"
       nginx.ingress.kubernetes.io/use-regex: "true"
+      %{ if length(trimspace(acm_certificate_arn)) == 0 }
       # ------------
       # Cert-manager issuer.
       # Remove this section if you're not using cert-manager for SSL certificates.
       cert-manager.io/cluster-issuer: letsencrypt
       # ------------
+      %{ endif }
     enabled: true
     className: "nginx"
     hosts:
@@ -260,10 +272,12 @@ auth:
         paths:
           - path: "/backend/auth(/|$)(.*)"
             pathType: ImplementationSpecific
+    %{ if length(trimspace(acm_certificate_arn)) == 0 }
     tls:
       - secretName: nebuly-tls
         hosts:
           - ${platform_domain}
+    %{ endif }
 
 frontend:
   image:
@@ -275,21 +289,25 @@ frontend:
   ingress:
     enabled: true
     annotations:
+      %{ if length(trimspace(acm_certificate_arn)) == 0 }
       # ------------
       # Cert-manager issuer.
       # Remove this section if you're not using cert-manager for SSL certificates.
       cert-manager.io/cluster-issuer: letsencrypt
       # ------------
+      %{ endif }
     className: "nginx"
     hosts:
       - host: ${platform_domain}
         paths:
           - path: /
             pathType: Prefix
+    %{ if length(trimspace(acm_certificate_arn)) == 0 }
     tls:
       - secretName: nebuly-tls
         hosts:
           - ${platform_domain}
+    %{ endif }
 
 openAi:
   enabled: true
