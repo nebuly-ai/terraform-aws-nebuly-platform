@@ -106,7 +106,7 @@ module "main" {
   openai_gpt4_deployment_name = "gpt-4"
   openai_endpoint             = "https://test.nebuly.com"
   openai_api_key              = "test"
-  openai_api_key_secret_arn = "test"
+  # openai_api_key_secret_arn   = "arn:aws:secretsmanager:eu-west-1:123456789012:secret:my-openai-key-ABCDEF"
 
   nebuly_credentials = var.nebuly_credentials
   platform_domain    = "platform.aws.testing.nebuly.com"

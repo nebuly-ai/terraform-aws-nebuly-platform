@@ -37,6 +37,33 @@ variable "platform_domain" {
 variable "openai_api_key" {
   description = "The API Key used for authenticating with OpenAI."
   type        = string
+  default     = null
+}
+variable "openai_api_key_secret_arn" {
+  description = "ARN of an existing Secrets Manager secret containing the OpenAI API key. Mutually exclusive with openai_api_key."
+  type        = string
+  default     = null
+
+  validation {
+    condition = (
+      (var.openai_api_key_secret_arn == null && var.openai_api_key != null) ||
+      (var.openai_api_key_secret_arn != null && var.openai_api_key == null)
+    )
+    error_message = "You must specify exactly one of openai_api_key or openai_api_key_secret_arn."
+  }
+
+  # ARN format validation
+  validation {
+    condition = (
+      var.openai_api_key_secret_arn == null
+      ||
+      can(regex(
+        "^arn:(aws|aws-us-gov|aws-cn):secretsmanager:[a-z0-9-]+:\\d{12}:secret:[A-Za-z0-9/_+=.@-]+.*$",
+        var.openai_api_key_secret_arn
+      ))
+    )
+    error_message = "openai_api_key_secret_arn must be a valid AWS Secrets Manager secret ARN."
+  }
 }
 variable "openai_endpoint" {
   description = "The endpoint of the OpenAI API."

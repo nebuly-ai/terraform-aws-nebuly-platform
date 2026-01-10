@@ -481,7 +481,19 @@ resource "aws_security_group_rule" "allow_all_outbound_within_vpc" {
 
 
 # ----------- External secrets ----------- #
+locals {
+  openai_api_key_provided        = var.openai_api_key != null
+  openai_api_key_secret_provided = var.openai_api_key_secret_arn != null
+  # Determine the name of the OpenAI API key secret from arn if provided
+  openai_api_key_secret_name = (
+    local.openai_api_key_secret_provided ? 
+      split(":", var.openai_api_key_secret_arn)[6] 
+      : 
+      aws_secretsmanager_secret.openai_api_key[0].name
+  )
+}
 resource "aws_secretsmanager_secret" "openai_api_key" {
+  count = var.openai_api_key != null ? 1 : 0
   name = (
     local.use_secrets_suffix ?
     format("%s-openai-api-key-%s", var.resource_prefix, local.secrets_suffix) :
@@ -489,7 +501,8 @@ resource "aws_secretsmanager_secret" "openai_api_key" {
   )
 }
 resource "aws_secretsmanager_secret_version" "openai_api_key" {
-  secret_id     = aws_secretsmanager_secret.openai_api_key.id
+  count = var.openai_api_key != null ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.openai_api_key[0].id
   secret_string = var.openai_api_key
 }
 resource "aws_secretsmanager_secret" "nebuly_credentials" {
@@ -670,7 +683,7 @@ locals {
       secret_name_jwt_signing_key          = aws_secretsmanager_secret.auth_jwt_key.name
       secret_name_auth_db_credentials      = aws_secretsmanager_secret.rds_auth_credentials.name
       secret_name_analytics_db_credentials = aws_secretsmanager_secret.rds_analytics_credentials.name
-      secret_name_openai_api_key           = aws_secretsmanager_secret.openai_api_key.name
+      secret_name_openai_api_key           = local.openai_api_key_secret_name
       secret_name_okta_sso_credentials     = var.okta_sso == null ? "" : aws_secretsmanager_secret.okta_sso_credentials[0].name
 
       secret_name_nebuly_credentials = aws_secretsmanager_secret.nebuly_credentials.name

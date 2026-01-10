@@ -71,7 +71,7 @@ output "auth_db_credentials" {
 ### ----------- External Secrets ----------- ###
 output "openai_api_key_secret_name" {
   description = "The name of the secret storing the OpenAI API Key."
-  value       = aws_secretsmanager_secret.openai_api_key.name
+  value       = local.openai_api_key_secret_name
 }
 
 
