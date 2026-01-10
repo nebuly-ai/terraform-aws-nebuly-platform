@@ -103,6 +103,17 @@ variable "google_sso" {
   default = null
 }
 
+variable "microsoft_sso" {
+  description = "Settings for configuring the Microsoft SSO integration."
+  type = object({
+    tenant_id : string
+    client_id : string
+    client_secret : string
+    role_mapping : map(string)
+  })
+  default = null
+}
+
 
 # ------ Kubernetes ------ #
 variable "k8s_image_pull_secret_name" {

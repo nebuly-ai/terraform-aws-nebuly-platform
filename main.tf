@@ -616,6 +616,8 @@ locals {
   k8s_secret_key_openai_api_key           = "openai-api-key"
   k8s_secret_key_nebuly_client_id         = "nebuly-azure-client-id"
   k8s_secret_key_nebuly_client_secret     = "nebuly-azure-client-secret"
+  k8s_secret_key_microsoft_sso_client_id     = "microsoft-sso-client-id"
+  k8s_secret_key_microsoft_sso_client_secret = "microsoft-sso-client-secret"
   k8s_secret_key_okta_sso_client_id       = "okta-sso-client-id"
   k8s_secret_key_okta_sso_client_secret   = "okta-sso-client-secret"
   k8s_secret_key_google_sso_client_id     = "google-sso-client-id"
@@ -662,6 +664,11 @@ locals {
       google_sso_role_mapping                 = var.google_sso != null ? join(",", [for role, group in var.google_sso.role_mapping : "${role}:${group}"]) : ""
       k8s_secret_key_google_sso_client_id     = local.k8s_secret_key_google_sso_client_id
       k8s_secret_key_google_sso_client_secret = local.k8s_secret_key_google_sso_client_secret
+
+      microsoft_sso_enabled                      = var.microsoft_sso != null
+      microsoft_sso_role_mapping                 = var.microsoft_sso != null ? join(",", [for role, group in var.microsoft_sso.role_mapping : "${role}:${group}"]) : ""
+      k8s_secret_key_microsoft_sso_client_id     = local.k8s_secret_key_microsoft_sso_client_id
+      k8s_secret_key_microsoft_sso_client_secret = local.k8s_secret_key_microsoft_sso_client_secret
 
       s3_bucket_name                    = aws_s3_bucket.ai_models.bucket
       clickhouse_backups_s3_bucket_name = aws_s3_bucket.backups.bucket
