@@ -226,8 +226,8 @@ variable "eks_kubernetes_version" {
   description = "Specify which Kubernetes release to use."
   type        = string
   validation {
-    condition     = can(regex("1.32|1.31|1.30", var.eks_kubernetes_version))
-    error_message = "allowed versions are 1.32, 1.31, 1.30"
+    condition     = can(regex("1.33|1.32|1.31|1.30", var.eks_kubernetes_version))
+    error_message = "allowed versions are 1.33, 1.32, 1.31, 1.30"
   }
 }
 variable "eks_cluster_endpoint_public_access" {
