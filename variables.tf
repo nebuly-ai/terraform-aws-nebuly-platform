@@ -131,9 +131,25 @@ variable "security_group" {
   })
   description = "The security group to use."
 }
+
+variable "create_eks_load_balancer_security_group" {
+  description = "If true, the module creates the EKS load balancer security group. If false, the module does not create one and may optionally use a provided security group id."
+  type        = bool
+  default     = true
+}
+
 variable "allowed_inbound_cidr_blocks" {
-  description = "The CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic"
+  description = "CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic."
   type        = map(string)
+  default     = {}
+
+  validation {
+    condition = (
+      !var.create_eks_load_balancer_security_group
+      || length(var.allowed_inbound_cidr_blocks) > 0
+    )
+    error_message = "allowed_inbound_cidr_blocks must be non-empty when create_eks_load_balancer_security_group is true."
+  }
 }
 variable "create_security_group_rules" {
   description = "If True, add to the specified security group the rules required for allowing connectivity between the provisioned services among all the specified subnets."

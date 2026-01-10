@@ -64,6 +64,25 @@ provider "aws" {
   region     = var.region
 }
 
+# test load balancer security group
+# resource "aws_security_group" "eks_load_balancer" {
+#   name        = "nbllab-eks-load-balancer"
+#   description = "Rules for the EKS load balancer."
+#   vpc_id      = data.aws_vpc.default.id
+
+#   # Allow all outbound traffix
+#   egress {
+#     from_port        = 0
+#     to_port          = 0
+#     protocol         = "-1"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#     ipv6_cidr_blocks = ["::/0"]
+#   }
+
+#   tags = {
+#     Name = "nbllab-eks-load-balancer"
+#   }
+# }
 
 module "main" {
   source = "../../"
@@ -73,9 +92,9 @@ module "main" {
   eks_cloudwatch_observability_enabled = false
   eks_cluster_endpoint_public_access   = true
   eks_kubernetes_version               = "1.33"
-  allowed_inbound_cidr_blocks = {
-    "all" : "0.0.0.0/0"
-  }
+  # allowed_inbound_cidr_blocks = {
+  #   "all" : "0.0.0.0/0"
+  # }
 
   secrets_suffix = null
 
@@ -166,6 +185,8 @@ module "main" {
       }
     }
   }
+
+  create_eks_load_balancer_security_group = false
 }
 
 

@@ -418,6 +418,7 @@ resource "aws_secretsmanager_secret_version" "admin_user_password" {
 
 # ----------- Networking ----------- #
 resource "aws_security_group" "eks_load_balancer" {
+  count       = var.create_eks_load_balancer_security_group ? 1 : 0
   name        = local.eks_load_balancer_name
   description = "Rules for the EKS load balancer."
   vpc_id      = var.vpc_id
@@ -436,18 +437,18 @@ resource "aws_security_group" "eks_load_balancer" {
   }
 }
 resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_https" {
-  for_each = var.allowed_inbound_cidr_blocks
-
-  security_group_id = aws_security_group.eks_load_balancer.id
+  for_each = var.create_eks_load_balancer_security_group ? var.allowed_inbound_cidr_blocks : {}
+  
+  security_group_id = aws_security_group.eks_load_balancer[0].id
   cidr_ipv4         = each.value
   from_port         = 443
   ip_protocol       = "tcp"
   to_port           = 443
 }
 resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_http" {
-  for_each = var.allowed_inbound_cidr_blocks
+  for_each = var.create_eks_load_balancer_security_group ? var.allowed_inbound_cidr_blocks : {}
 
-  security_group_id = aws_security_group.eks_load_balancer.id
+  security_group_id = aws_security_group.eks_load_balancer[0].id
   cidr_ipv4         = each.value
   from_port         = 80
   ip_protocol       = "tcp"

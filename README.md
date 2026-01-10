@@ -234,7 +234,8 @@ You can find examples of code that uses this Terraform module in the [examples](
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_acm_certificate_arn"></a> [acm\_certificate\_arn](#input\_acm\_certificate\_arn) | If set, use AWS NLB TLS termination with this ACM cert ARN | `string` | `null` | no |
-| <a name="input_allowed_inbound_cidr_blocks"></a> [allowed\_inbound\_cidr\_blocks](#input\_allowed\_inbound\_cidr\_blocks) | The CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic | `map(string)` | n/a | yes |
+| <a name="input_allowed_inbound_cidr_blocks"></a> [allowed\_inbound\_cidr\_blocks](#input\_allowed\_inbound\_cidr\_blocks) | CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic. | `map(string)` | `{}` | no |
+| <a name="input_create_eks_load_balancer_security_group"></a> [create\_eks\_load\_balancer\_security\_group](#input\_create\_eks\_load\_balancer\_security\_group) | If true, the module creates the EKS load balancer security group. If false, the module does not create one and may optionally use a provided security group id. | `bool` | `true` | no |
 | <a name="input_create_security_group_rules"></a> [create\_security\_group\_rules](#input\_create\_security\_group\_rules) | If True, add to the specified security group the rules required for allowing connectivity between the provisioned services among all the specified subnets. | `bool` | `false` | no |
 | <a name="input_eks_cloudwatch_observability_enabled"></a> [eks\_cloudwatch\_observability\_enabled](#input\_eks\_cloudwatch\_observability\_enabled) | If true, install the CloudWatch Observability add-on.<br/>  The add-on installs the CloudWatch agent to send infrastructure metrics from the cluster, <br/>  installs Fluent Bit to send container logs, and also enables CloudWatch Application Signals <br/>  to send application performance telemetry. | `bool` | `false` | no |
 | <a name="input_eks_cluster_admin_arns"></a> [eks\_cluster\_admin\_arns](#input\_eks\_cluster\_admin\_arns) | List of ARNs that will be granted the role of Cluster Admin over EKS | `set(string)` | `[]` | no |
@@ -248,9 +249,10 @@ You can find examples of code that uses this Terraform module in the [examples](
 | <a name="input_k8s_image_pull_secret_name"></a> [k8s\_image\_pull\_secret\_name](#input\_k8s\_image\_pull\_secret\_name) | The name of the Kubernetes Image Pull Secret to use. <br/>  This value will be used to auto-generate the values.yaml file for installing the Nebuly Platform Helm chart. | `string` | `"nebuly-docker-pull"` | no |
 | <a name="input_nebuly_credentials"></a> [nebuly\_credentials](#input\_nebuly\_credentials) | The credentials provided by Nebuly are required for activating your platform installation. <br/>  If you haven't received your credentials or have lost them, please contact support@nebuly.ai. | <pre>object({<br/>    client_id : string<br/>    client_secret : string<br/>  })</pre> | n/a | yes |
 | <a name="input_okta_sso"></a> [okta\_sso](#input\_okta\_sso) | Settings for configuring the Okta SSO integration. | <pre>object({<br/>    issuer : string<br/>    client_id : string<br/>    client_secret : string<br/>  })</pre> | `null` | no |
-| <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | The API Key used for authenticating with OpenAI. | `string` | n/a | yes |
+| <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | The API Key used for authenticating with OpenAI. | `string` | `null` | no |
+| <a name="input_openai_api_key_secret_arn"></a> [openai\_api\_key\_secret\_arn](#input\_openai\_api\_key\_secret\_arn) | ARN of an existing Secrets Manager secret containing the OpenAI API key. Mutually exclusive with openai\_api\_key. | `string` | `null` | no |
 | <a name="input_openai_endpoint"></a> [openai\_endpoint](#input\_openai\_endpoint) | The endpoint of the OpenAI API. | `string` | n/a | yes |
-| <a name="input_openai_gpt4_deployment_name"></a> [openai\_gpt4\_deployment\_name](#input\_openai\_gpt4\_deployment\_name) | The name of the deployment to use for the GPT-4 model. | `string` | n/a | yes |
+| <a name="input_openai_gpt4_deployment_name"></a> [openai\_gpt4\_deployment\_name](#input\_openai\_gpt4\_deployment\_name) | The name of the deployment to use for the GPT-4 model. | `string` | `"gpt-4"` | no |
 | <a name="input_platform_domain"></a> [platform\_domain](#input\_platform\_domain) | The domain on which the deployed Nebuly platform is made accessible. | `string` | n/a | yes |
 | <a name="input_rds_analytics_instance_type"></a> [rds\_analytics\_instance\_type](#input\_rds\_analytics\_instance\_type) | The instance type of the RDS instance hosting the analytics DB. | `string` | `"db.m7g.xlarge"` | no |
 | <a name="input_rds_analytics_storage"></a> [rds\_analytics\_storage](#input\_rds\_analytics\_storage) | Storage settings of the analytics DB. | <pre>object({<br/>    allocated_gb : number<br/>    max_allocated_gb : number<br/>    type : string<br/>    iops : optional(number, null)<br/>  })</pre> | <pre>{<br/>  "allocated_gb": 32,<br/>  "max_allocated_gb": 128,<br/>  "type": "gp3"<br/>}</pre> | no |
@@ -277,33 +279,33 @@ You can find examples of code that uses this Terraform module in the [examples](
 ## Resources
 
 
-- resource.aws_iam_role.ebs_csi (/terraform-docs/main.tf#554)
-- resource.aws_iam_role_policy_attachment.ai_models__eks_access (/terraform-docs/main.tf#577)
-- resource.aws_iam_role_policy_attachment.backups__eks_access (/terraform-docs/main.tf#585)
-- resource.aws_iam_role_policy_attachment.ebs_csi_attach (/terraform-docs/main.tf#567)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#573)
-- resource.aws_s3_bucket.backups (/terraform-docs/main.tf#581)
+- resource.aws_iam_role.ebs_csi (/terraform-docs/main.tf#568)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_access (/terraform-docs/main.tf#591)
+- resource.aws_iam_role_policy_attachment.backups__eks_access (/terraform-docs/main.tf#599)
+- resource.aws_iam_role_policy_attachment.ebs_csi_attach (/terraform-docs/main.tf#581)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#587)
+- resource.aws_s3_bucket.backups (/terraform-docs/main.tf#595)
 - resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#404)
 - resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#387)
-- resource.aws_secretsmanager_secret.google_sso_credentials (/terraform-docs/main.tf#531)
-- resource.aws_secretsmanager_secret.nebuly_credentials (/terraform-docs/main.tf#495)
-- resource.aws_secretsmanager_secret.okta_sso_credentials (/terraform-docs/main.tf#511)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#484)
+- resource.aws_secretsmanager_secret.google_sso_credentials (/terraform-docs/main.tf#545)
+- resource.aws_secretsmanager_secret.nebuly_credentials (/terraform-docs/main.tf#509)
+- resource.aws_secretsmanager_secret.okta_sso_credentials (/terraform-docs/main.tf#525)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#496)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#141)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#230)
 - resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#412)
 - resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#395)
-- resource.aws_secretsmanager_secret_version.google_sso_credentials (/terraform-docs/main.tf#540)
-- resource.aws_secretsmanager_secret_version.nebuly_credentials (/terraform-docs/main.tf#502)
-- resource.aws_secretsmanager_secret_version.okta_sso_credentials (/terraform-docs/main.tf#520)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#491)
+- resource.aws_secretsmanager_secret_version.google_sso_credentials (/terraform-docs/main.tf#554)
+- resource.aws_secretsmanager_secret_version.nebuly_credentials (/terraform-docs/main.tf#516)
+- resource.aws_secretsmanager_secret_version.okta_sso_credentials (/terraform-docs/main.tf#534)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#504)
 - resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#148)
 - resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#237)
 - resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#420)
-- resource.aws_security_group_rule.allow_all_inbound_within_vpc (/terraform-docs/main.tf#458)
-- resource.aws_security_group_rule.allow_all_outbound_within_vpc (/terraform-docs/main.tf#469)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#447)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#438)
+- resource.aws_security_group_rule.allow_all_inbound_within_vpc (/terraform-docs/main.tf#459)
+- resource.aws_security_group_rule.allow_all_outbound_within_vpc (/terraform-docs/main.tf#470)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#448)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#439)
 - resource.random_password.admin_user_password (/terraform-docs/main.tf#400)
 - resource.random_password.rds_analytics (/terraform-docs/main.tf#136)
 - resource.random_password.rds_auth (/terraform-docs/main.tf#225)
