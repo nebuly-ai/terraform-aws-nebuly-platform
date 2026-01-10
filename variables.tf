@@ -72,6 +72,7 @@ variable "openai_endpoint" {
 variable "openai_gpt4_deployment_name" {
   description = "The name of the deployment to use for the GPT-4 model."
   type        = string
+  default     = "gpt-4"
 }
 variable "nebuly_credentials" {
   type = object({

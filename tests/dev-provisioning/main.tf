@@ -103,7 +103,7 @@ module "main" {
   subnet_ids                  = data.aws_subnets.default.ids
   resource_prefix             = "nbllab"
 
-  openai_gpt4_deployment_name = "gpt-4"
+  # openai_gpt4_deployment_name = "gpt-4"
   openai_endpoint             = "https://test.nebuly.com"
   openai_api_key              = "test"
   # openai_api_key_secret_arn   = "arn:aws:secretsmanager:eu-west-1:123456789012:secret:my-openai-key-ABCDEF"
