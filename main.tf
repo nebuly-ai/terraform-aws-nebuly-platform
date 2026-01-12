@@ -488,7 +488,6 @@ resource "aws_security_group_rule" "allow_all_outbound_within_vpc" {
 
 # ----------- External secrets ----------- #
 locals {
-  openai_api_key_provided        = var.openai_api_key != null
   openai_api_key_secret_provided = var.openai_api_key_secret_arn != null
   # Determine the name of the OpenAI API key secret from arn if provided
   openai_api_key_secret_name = (
