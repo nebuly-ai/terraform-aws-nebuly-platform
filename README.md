@@ -240,13 +240,18 @@ You can find examples of code that uses this Terraform module in the [examples](
 | <a name="input_eks_cloudwatch_observability_enabled"></a> [eks\_cloudwatch\_observability\_enabled](#input\_eks\_cloudwatch\_observability\_enabled) | If true, install the CloudWatch Observability add-on.<br/>  The add-on installs the CloudWatch agent to send infrastructure metrics from the cluster, <br/>  installs Fluent Bit to send container logs, and also enables CloudWatch Application Signals <br/>  to send application performance telemetry. | `bool` | `false` | no |
 | <a name="input_eks_cluster_admin_arns"></a> [eks\_cluster\_admin\_arns](#input\_eks\_cluster\_admin\_arns) | List of ARNs that will be granted the role of Cluster Admin over EKS | `set(string)` | `[]` | no |
 | <a name="input_eks_cluster_endpoint_public_access"></a> [eks\_cluster\_endpoint\_public\_access](#input\_eks\_cluster\_endpoint\_public\_access) | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | `bool` | n/a | yes |
+| <a name="input_eks_cluster_security_group_id"></a> [eks\_cluster\_security\_group\_id](#input\_eks\_cluster\_security\_group\_id) | Optional: existing security group id for the EKS control plane (cluster SG). If null, module creates one. | `string` | `null` | no |
+| <a name="input_eks_create_node_security_group"></a> [eks\_create\_node\_security\_group](#input\_eks\_create\_node\_security\_group) | If true, the module creates the EKS worker nodes security group. | `bool` | `true` | no |
+| <a name="input_eks_create_security_group"></a> [eks\_create\_security\_group](#input\_eks\_create\_security\_group) | If true, the module creates the EKS cluster security group. | `bool` | `true` | no |
 | <a name="input_eks_enable_cluster_creator_admin_permissions"></a> [eks\_enable\_cluster\_creator\_admin\_permissions](#input\_eks\_enable\_cluster\_creator\_admin\_permissions) | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry. | `bool` | `true` | no |
 | <a name="input_eks_enable_prefix_delegation"></a> [eks\_enable\_prefix\_delegation](#input\_eks\_enable\_prefix\_delegation) | If true, enable the prefix delegation for the EKS cluster to increase the <br/>  number of available IP addresses for the pods.<br/><br/>  This should be enabled only if the cluster subnet have limited IP addresses available.<br/><br/>  For more information, see: https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html. | `bool` | `false` | no |
 | <a name="input_eks_kubernetes_version"></a> [eks\_kubernetes\_version](#input\_eks\_kubernetes\_version) | Specify which Kubernetes release to use. | `string` | n/a | yes |
 | <a name="input_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#input\_eks\_managed\_node\_groups) | The managed node groups of the EKS cluster. | <pre>map(object({<br/>    instance_types = set(string)<br/>    min_size       = number<br/>    max_size       = number<br/>    desired_size   = optional(number)<br/>    subnet_ids     = optional(list(string), null)<br/>    ami_type       = optional(string, "AL2023_x86_64_STANDARD")<br/>    block_device_mappings = optional(map(object({<br/>      device_name = optional(string, "/dev/xvda")<br/>      ebs = optional(object({<br/>        delete_on_termination = optional(bool)<br/>        encrypted             = optional(bool, true)<br/>        volume_size           = optional(number, 128)<br/>        volume_type           = optional(string, "gp3")<br/>      }))<br/>    })))<br/>    disk_size_gb               = optional(number, 128)<br/>    tags                       = optional(map(string), {})<br/>    use_custom_launch_template = optional(bool, true)<br/>    labels                     = optional(map(string), {})<br/>    taints = optional(map(object({<br/>      key    = string<br/>      value  = optional(string)<br/>      effect = string<br/>    })))<br/>  }))</pre> | <pre>{<br/>  "ch-01": {<br/>    "ami_type": "AL2023_ARM_64_STANDARD",<br/>    "block_device_mappings": {<br/>      "sdc": {<br/>        "device_name": "/dev/xvda",<br/>        "ebs": {<br/>          "delete_on_termination": true,<br/>          "encrypted": true,<br/>          "volume_size": 128,<br/>          "volume_type": "gp3"<br/>        }<br/>      }<br/>    },<br/>    "desired_size": 1,<br/>    "instance_types": [<br/>      "r7g.xlarge"<br/>    ],<br/>    "labels": {<br/>      "nebuly.com/reserved": "clickhouse"<br/>    },<br/>    "max_size": 1,<br/>    "min_size": 1,<br/>    "taints": {<br/>      "clickhouse": {<br/>        "effect": "NO_SCHEDULE",<br/>        "key": "nebuly.com/reserved",<br/>        "value": "clickhouse"<br/>      }<br/>    }<br/>  },<br/>  "gpu-a10": {<br/>    "ami_type": "AL2023_x86_64_NVIDIA",<br/>    "block_device_mappings": {<br/>      "sdc": {<br/>        "device_name": "/dev/xvda",<br/>        "ebs": {<br/>          "delete_on_termination": true,<br/>          "encrypted": true,<br/>          "volume_size": 128,<br/>          "volume_type": "gp3"<br/>        }<br/>      }<br/>    },<br/>    "desired_size": 0,<br/>    "disk_size_gb": 128,<br/>    "instance_types": [<br/>      "g5.12xlarge"<br/>    ],<br/>    "labels": {<br/>      "nebuly.com/accelerator": "nvidia-ampere-a10",<br/>      "nvidia.com/gpu.present": "true"<br/>    },<br/>    "max_size": 1,<br/>    "min_size": 0,<br/>    "tags": {<br/>      "k8s.io/cluster-autoscaler/enabled": "true"<br/>    },<br/>    "taints": {<br/>      "gpu": {<br/>        "effect": "NO_SCHEDULE",<br/>        "key": "nvidia.com/gpu"<br/>      }<br/>    }<br/>  },<br/>  "workers": {<br/>    "block_device_mappings": {<br/>      "sdc": {<br/>        "device_name": "/dev/xvda",<br/>        "ebs": {<br/>          "delete_on_termination": true,<br/>          "encrypted": true,<br/>          "volume_size": 128,<br/>          "volume_type": "gp3"<br/>        }<br/>      }<br/>    },<br/>    "desired_size": 1,<br/>    "instance_types": [<br/>      "r5.xlarge"<br/>    ],<br/>    "max_size": 1,<br/>    "min_size": 1<br/>  }<br/>}</pre> | no |
+| <a name="input_eks_node_security_group_id"></a> [eks\_node\_security\_group\_id](#input\_eks\_node\_security\_group\_id) | Optional: existing security group id for EKS worker nodes (shared node SG). If null, module creates one. | `string` | `null` | no |
 | <a name="input_eks_service_accounts"></a> [eks\_service\_accounts](#input\_eks\_service\_accounts) | The service accounts that will able to assume the EKS IAM Role. | <pre>list(object({<br/>    name : string<br/>    namespace : string<br/>  }))</pre> | <pre>[<br/>  {<br/>    "name": "aws-load-balancer-controller",<br/>    "namespace": "kube-system"<br/>  },<br/>  {<br/>    "name": "cluster-autoscaler",<br/>    "namespace": "kube-system"<br/>  },<br/>  {<br/>    "name": "cluster-autoscaler",<br/>    "namespace": "nebuly"<br/>  },<br/>  {<br/>    "name": "cluster-autoscaler",<br/>    "namespace": "nebuly-bootstrap"<br/>  },<br/>  {<br/>    "name": "aws-load-balancer-controller",<br/>    "namespace": "nebuly"<br/>  },<br/>  {<br/>    "name": "nebuly",<br/>    "namespace": "nebuly"<br/>  },<br/>  {<br/>    "name": "nebuly",<br/>    "namespace": "default"<br/>  }<br/>]</pre> | no |
 | <a name="input_google_sso"></a> [google\_sso](#input\_google\_sso) | Settings for configuring the Google SSO integration. | <pre>object({<br/>    client_id : string<br/>    client_secret : string<br/>    role_mapping : map(string)<br/>  })</pre> | `null` | no |
 | <a name="input_k8s_image_pull_secret_name"></a> [k8s\_image\_pull\_secret\_name](#input\_k8s\_image\_pull\_secret\_name) | The name of the Kubernetes Image Pull Secret to use. <br/>  This value will be used to auto-generate the values.yaml file for installing the Nebuly Platform Helm chart. | `string` | `"nebuly-docker-pull"` | no |
+| <a name="input_microsoft_sso"></a> [microsoft\_sso](#input\_microsoft\_sso) | Settings for configuring the Microsoft SSO integration. | <pre>object({<br/>    tenant_id : string<br/>    client_id : string<br/>    client_secret : string<br/>    role_mapping : map(string)<br/>  })</pre> | `null` | no |
 | <a name="input_nebuly_credentials"></a> [nebuly\_credentials](#input\_nebuly\_credentials) | The credentials provided by Nebuly are required for activating your platform installation. <br/>  If you haven't received your credentials or have lost them, please contact support@nebuly.ai. | <pre>object({<br/>    client_id : string<br/>    client_secret : string<br/>  })</pre> | n/a | yes |
 | <a name="input_okta_sso"></a> [okta\_sso](#input\_okta\_sso) | Settings for configuring the Okta SSO integration. | <pre>object({<br/>    issuer : string<br/>    client_id : string<br/>    client_secret : string<br/>  })</pre> | `null` | no |
 | <a name="input_openai_api_key"></a> [openai\_api\_key](#input\_openai\_api\_key) | The API Key used for authenticating with OpenAI. | `string` | `null` | no |
@@ -279,37 +284,37 @@ You can find examples of code that uses this Terraform module in the [examples](
 ## Resources
 
 
-- resource.aws_iam_role.ebs_csi (/terraform-docs/main.tf#568)
-- resource.aws_iam_role_policy_attachment.ai_models__eks_access (/terraform-docs/main.tf#591)
-- resource.aws_iam_role_policy_attachment.backups__eks_access (/terraform-docs/main.tf#599)
-- resource.aws_iam_role_policy_attachment.ebs_csi_attach (/terraform-docs/main.tf#581)
-- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#587)
-- resource.aws_s3_bucket.backups (/terraform-docs/main.tf#595)
-- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#404)
-- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#387)
-- resource.aws_secretsmanager_secret.google_sso_credentials (/terraform-docs/main.tf#545)
-- resource.aws_secretsmanager_secret.nebuly_credentials (/terraform-docs/main.tf#509)
-- resource.aws_secretsmanager_secret.okta_sso_credentials (/terraform-docs/main.tf#525)
-- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#496)
+- resource.aws_iam_role.ebs_csi (/terraform-docs/main.tf#573)
+- resource.aws_iam_role_policy_attachment.ai_models__eks_access (/terraform-docs/main.tf#596)
+- resource.aws_iam_role_policy_attachment.backups__eks_access (/terraform-docs/main.tf#604)
+- resource.aws_iam_role_policy_attachment.ebs_csi_attach (/terraform-docs/main.tf#586)
+- resource.aws_s3_bucket.ai_models (/terraform-docs/main.tf#592)
+- resource.aws_s3_bucket.backups (/terraform-docs/main.tf#600)
+- resource.aws_secretsmanager_secret.admin_user_password (/terraform-docs/main.tf#409)
+- resource.aws_secretsmanager_secret.auth_jwt_key (/terraform-docs/main.tf#392)
+- resource.aws_secretsmanager_secret.google_sso_credentials (/terraform-docs/main.tf#550)
+- resource.aws_secretsmanager_secret.nebuly_credentials (/terraform-docs/main.tf#514)
+- resource.aws_secretsmanager_secret.okta_sso_credentials (/terraform-docs/main.tf#530)
+- resource.aws_secretsmanager_secret.openai_api_key (/terraform-docs/main.tf#501)
 - resource.aws_secretsmanager_secret.rds_analytics_credentials (/terraform-docs/main.tf#141)
 - resource.aws_secretsmanager_secret.rds_auth_credentials (/terraform-docs/main.tf#230)
-- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#412)
-- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#395)
-- resource.aws_secretsmanager_secret_version.google_sso_credentials (/terraform-docs/main.tf#554)
-- resource.aws_secretsmanager_secret_version.nebuly_credentials (/terraform-docs/main.tf#516)
-- resource.aws_secretsmanager_secret_version.okta_sso_credentials (/terraform-docs/main.tf#534)
-- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#504)
+- resource.aws_secretsmanager_secret_version.admin_user_password (/terraform-docs/main.tf#417)
+- resource.aws_secretsmanager_secret_version.auth_jwt_key (/terraform-docs/main.tf#400)
+- resource.aws_secretsmanager_secret_version.google_sso_credentials (/terraform-docs/main.tf#559)
+- resource.aws_secretsmanager_secret_version.nebuly_credentials (/terraform-docs/main.tf#521)
+- resource.aws_secretsmanager_secret_version.okta_sso_credentials (/terraform-docs/main.tf#539)
+- resource.aws_secretsmanager_secret_version.openai_api_key (/terraform-docs/main.tf#509)
 - resource.aws_secretsmanager_secret_version.rds_analytics_password (/terraform-docs/main.tf#148)
 - resource.aws_secretsmanager_secret_version.rds_auth_password (/terraform-docs/main.tf#237)
-- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#420)
-- resource.aws_security_group_rule.allow_all_inbound_within_vpc (/terraform-docs/main.tf#459)
-- resource.aws_security_group_rule.allow_all_outbound_within_vpc (/terraform-docs/main.tf#470)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#448)
-- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#439)
-- resource.random_password.admin_user_password (/terraform-docs/main.tf#400)
+- resource.aws_security_group.eks_load_balancer (/terraform-docs/main.tf#425)
+- resource.aws_security_group_rule.allow_all_inbound_within_vpc (/terraform-docs/main.tf#464)
+- resource.aws_security_group_rule.allow_all_outbound_within_vpc (/terraform-docs/main.tf#475)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_http (/terraform-docs/main.tf#453)
+- resource.aws_vpc_security_group_ingress_rule.eks_load_balancer_allow_https (/terraform-docs/main.tf#444)
+- resource.random_password.admin_user_password (/terraform-docs/main.tf#405)
 - resource.random_password.rds_analytics (/terraform-docs/main.tf#136)
 - resource.random_password.rds_auth (/terraform-docs/main.tf#225)
 - resource.random_string.secrets_suffix (/terraform-docs/main.tf#26)
-- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#383)
+- resource.tls_private_key.auth_jwt (/terraform-docs/main.tf#388)
 - data source.aws_partition.current (/terraform-docs/main.tf#19)
 - data source.aws_subnet.subnets (/terraform-docs/main.tf#20)
