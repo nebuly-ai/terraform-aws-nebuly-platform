@@ -294,6 +294,45 @@ variable "eks_enable_cluster_creator_admin_permissions" {
   type        = bool
   default     = true
 }
+
+variable "eks_create_security_group" {
+  description = "If true, the module creates the EKS cluster security group."
+  type        = bool
+  default     = true
+}
+
+variable "eks_create_node_security_group" {
+  description = "If true, the module creates the EKS worker nodes security group."
+  type        = bool
+  default     = true
+}
+variable "eks_cluster_security_group_id" {
+  description = "Optional: existing security group id for the EKS control plane (cluster SG). If null, module creates one."
+  type        = string
+  default     = null
+
+  validation {
+    condition = (
+      var.eks_create_security_group
+      || (var.eks_cluster_security_group_id != null && var.eks_cluster_security_group_id != "")
+    )
+    error_message = "eks_cluster_security_group_id must be set when eks_create_security_group is false."
+  }
+}
+
+variable "eks_node_security_group_id" {
+  description = "Optional: existing security group id for EKS worker nodes (shared node SG). If null, module creates one."
+  type        = string
+  default     = null
+
+  validation {
+    condition = (
+      var.eks_create_node_security_group
+      || (var.eks_node_security_group_id != null && var.eks_node_security_group_id != "")
+    )
+    error_message = "eks_node_security_group_id must be set when eks_create_node_security_group is false."
+  }
+}
 variable "eks_cloudwatch_observability_enabled" {
   description = <<EOT
   If true, install the CloudWatch Observability add-on.

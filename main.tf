@@ -296,6 +296,11 @@ module "eks" {
   subnet_ids               = var.subnet_ids
   control_plane_subnet_ids = var.subnet_ids
 
+  create_security_group      = var.eks_create_security_group
+  security_group_id          = var.eks_cluster_security_group_id
+  create_node_security_group = var.eks_create_node_security_group
+  node_security_group_id     = var.eks_node_security_group_id
+
   endpoint_public_access = var.eks_cluster_endpoint_public_access
 
   enable_cluster_creator_admin_permissions = var.eks_enable_cluster_creator_admin_permissions
@@ -438,7 +443,7 @@ resource "aws_security_group" "eks_load_balancer" {
 }
 resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_https" {
   for_each = var.create_eks_load_balancer_security_group ? var.allowed_inbound_cidr_blocks : {}
-  
+
   security_group_id = aws_security_group.eks_load_balancer[0].id
   cidr_ipv4         = each.value
   from_port         = 443
@@ -487,10 +492,10 @@ locals {
   openai_api_key_secret_provided = var.openai_api_key_secret_arn != null
   # Determine the name of the OpenAI API key secret from arn if provided
   openai_api_key_secret_name = (
-    local.openai_api_key_secret_provided ? 
-      split(":", var.openai_api_key_secret_arn)[6] 
-      : 
-      aws_secretsmanager_secret.openai_api_key[0].name
+    local.openai_api_key_secret_provided ?
+    split(":", var.openai_api_key_secret_arn)[6]
+    :
+    aws_secretsmanager_secret.openai_api_key[0].name
   )
 }
 resource "aws_secretsmanager_secret" "openai_api_key" {
@@ -502,7 +507,7 @@ resource "aws_secretsmanager_secret" "openai_api_key" {
   )
 }
 resource "aws_secretsmanager_secret_version" "openai_api_key" {
-  count = var.openai_api_key != null ? 1 : 0
+  count         = var.openai_api_key != null ? 1 : 0
   secret_id     = aws_secretsmanager_secret.openai_api_key[0].id
   secret_string = var.openai_api_key
 }
@@ -608,20 +613,20 @@ locals {
   secret_provider_class_secret_name = "nebuly-platform-credentials"
 
   # k8s secrets keys
-  k8s_secret_key_analytics_db_username    = "analytics-db-username"
-  k8s_secret_key_analytics_db_password    = "analytics-db-password"
-  k8s_secret_key_auth_db_username         = "auth-db-username"
-  k8s_secret_key_auth_db_password         = "auth-db-password"
-  k8s_secret_key_jwt_signing_key          = "jwt-signing-key"
-  k8s_secret_key_openai_api_key           = "openai-api-key"
-  k8s_secret_key_nebuly_client_id         = "nebuly-azure-client-id"
-  k8s_secret_key_nebuly_client_secret     = "nebuly-azure-client-secret"
+  k8s_secret_key_analytics_db_username       = "analytics-db-username"
+  k8s_secret_key_analytics_db_password       = "analytics-db-password"
+  k8s_secret_key_auth_db_username            = "auth-db-username"
+  k8s_secret_key_auth_db_password            = "auth-db-password"
+  k8s_secret_key_jwt_signing_key             = "jwt-signing-key"
+  k8s_secret_key_openai_api_key              = "openai-api-key"
+  k8s_secret_key_nebuly_client_id            = "nebuly-azure-client-id"
+  k8s_secret_key_nebuly_client_secret        = "nebuly-azure-client-secret"
   k8s_secret_key_microsoft_sso_client_id     = "microsoft-sso-client-id"
   k8s_secret_key_microsoft_sso_client_secret = "microsoft-sso-client-secret"
-  k8s_secret_key_okta_sso_client_id       = "okta-sso-client-id"
-  k8s_secret_key_okta_sso_client_secret   = "okta-sso-client-secret"
-  k8s_secret_key_google_sso_client_id     = "google-sso-client-id"
-  k8s_secret_key_google_sso_client_secret = "google-sso-client-secret"
+  k8s_secret_key_okta_sso_client_id          = "okta-sso-client-id"
+  k8s_secret_key_okta_sso_client_secret      = "okta-sso-client-secret"
+  k8s_secret_key_google_sso_client_id        = "google-sso-client-id"
+  k8s_secret_key_google_sso_client_secret    = "google-sso-client-secret"
 
   bootstrap_helm_values = templatefile(
     "${path.module}/templates/helm-values-bootstrap.tpl.yaml",
@@ -666,6 +671,7 @@ locals {
       k8s_secret_key_google_sso_client_secret = local.k8s_secret_key_google_sso_client_secret
 
       microsoft_sso_enabled                      = var.microsoft_sso != null
+      microsoft_sso_tenant_id                    = var.microsoft_sso != null ? var.microsoft_sso.tenant_id : ""
       microsoft_sso_role_mapping                 = var.microsoft_sso != null ? join(",", [for role, group in var.microsoft_sso.role_mapping : "${role}:${group}"]) : ""
       k8s_secret_key_microsoft_sso_client_id     = local.k8s_secret_key_microsoft_sso_client_id
       k8s_secret_key_microsoft_sso_client_secret = local.k8s_secret_key_microsoft_sso_client_secret
@@ -699,6 +705,10 @@ locals {
       okta_sso_enabled                      = var.okta_sso != null
       k8s_secret_key_okta_sso_client_id     = local.k8s_secret_key_okta_sso_client_id
       k8s_secret_key_okta_sso_client_secret = local.k8s_secret_key_okta_sso_client_secret
+
+      microsoft_sso_enabled                      = var.microsoft_sso != null
+      k8s_secret_key_microsoft_sso_client_id     = local.k8s_secret_key_microsoft_sso_client_id
+      k8s_secret_key_microsoft_sso_client_secret = local.k8s_secret_key_microsoft_sso_client_secret
 
       k8s_secret_key_auth_db_username      = local.k8s_secret_key_auth_db_username
       k8s_secret_key_auth_db_password      = local.k8s_secret_key_auth_db_password

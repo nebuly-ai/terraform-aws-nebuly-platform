@@ -208,12 +208,16 @@ auth:
 
   %{ if microsoft_sso_enabled }
   loginModes: "microsoft"
-  %{ else if okta_sso_enabled }
-  loginModes: "okta"
-  %{ else if google_sso_enabled }
-  loginModes: "google"
   %{ else }
+    %{ if okta_sso_enabled }
+  loginModes: "okta"
+    %{ else }
+      %{ if google_sso_enabled }
+  loginModes: "google"
+      %{ else }
   loginModes: "password"
+      %{ endif }
+    %{ endif }
   %{ endif }
 
   # Optional Microsoft SSO
