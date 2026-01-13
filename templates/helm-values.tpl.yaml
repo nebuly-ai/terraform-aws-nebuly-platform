@@ -206,18 +206,32 @@ auth:
     postgresPasswordKey: ${k8s_secret_key_auth_db_password}
     jwtSigningKey: ${k8s_secret_key_jwt_signing_key}
 
-  %{ if okta_sso_enabled }
-  loginModes: "okta"
-  %{ endif }
-  %{ if google_sso_enabled }
-  loginModes: "google"
+  %{ if microsoft_sso_enabled }
+  loginModes: "microsoft"
   %{ else }
+    %{ if okta_sso_enabled }
+  loginModes: "okta"
+    %{ else }
+      %{ if google_sso_enabled }
+  loginModes: "google"
+      %{ else }
   loginModes: "password"
+      %{ endif }
+    %{ endif }
   %{ endif }
 
-
+  # Optional Microsoft SSO
+  %{ if microsoft_sso_enabled }
   microsoft:
-    enabled: false
+    enabled: ${microsoft_sso_enabled}
+    redirectUri: https://${platform_domain}/backend/auth/oauth/microsoft/callback
+    tenantId: ${microsoft_sso_tenant_id}
+    roleMapping: ${microsoft_sso_role_mapping}
+    existingSecret:
+      name: ${secret_provider_class_secret_name}
+      clientIdKey: ${k8s_secret_key_microsoft_sso_client_id}
+      clientSecretKey: ${k8s_secret_key_microsoft_sso_client_secret}
+  %{ endif }
 
   %{ if okta_sso_enabled }
   # Optional Okta SSO

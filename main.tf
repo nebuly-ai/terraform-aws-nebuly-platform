@@ -296,6 +296,11 @@ module "eks" {
   subnet_ids               = var.subnet_ids
   control_plane_subnet_ids = var.subnet_ids
 
+  create_security_group      = var.eks_create_security_group
+  security_group_id          = var.eks_cluster_security_group_id
+  create_node_security_group = var.eks_create_node_security_group
+  node_security_group_id     = var.eks_node_security_group_id
+
   endpoint_public_access = var.eks_cluster_endpoint_public_access
 
   enable_cluster_creator_admin_permissions = var.eks_enable_cluster_creator_admin_permissions
@@ -418,6 +423,7 @@ resource "aws_secretsmanager_secret_version" "admin_user_password" {
 
 # ----------- Networking ----------- #
 resource "aws_security_group" "eks_load_balancer" {
+  count       = var.create_eks_load_balancer_security_group ? 1 : 0
   name        = local.eks_load_balancer_name
   description = "Rules for the EKS load balancer."
   vpc_id      = var.vpc_id
@@ -436,18 +442,18 @@ resource "aws_security_group" "eks_load_balancer" {
   }
 }
 resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_https" {
-  for_each = var.allowed_inbound_cidr_blocks
+  for_each = var.create_eks_load_balancer_security_group ? var.allowed_inbound_cidr_blocks : {}
 
-  security_group_id = aws_security_group.eks_load_balancer.id
+  security_group_id = aws_security_group.eks_load_balancer[0].id
   cidr_ipv4         = each.value
   from_port         = 443
   ip_protocol       = "tcp"
   to_port           = 443
 }
 resource "aws_vpc_security_group_ingress_rule" "eks_load_balancer_allow_http" {
-  for_each = var.allowed_inbound_cidr_blocks
+  for_each = var.create_eks_load_balancer_security_group ? var.allowed_inbound_cidr_blocks : {}
 
-  security_group_id = aws_security_group.eks_load_balancer.id
+  security_group_id = aws_security_group.eks_load_balancer[0].id
   cidr_ipv4         = each.value
   from_port         = 80
   ip_protocol       = "tcp"
@@ -481,7 +487,18 @@ resource "aws_security_group_rule" "allow_all_outbound_within_vpc" {
 
 
 # ----------- External secrets ----------- #
+locals {
+  openai_api_key_secret_provided = var.openai_api_key_secret_arn != null
+  # Determine the name of the OpenAI API key secret from arn if provided
+  openai_api_key_secret_name = (
+    local.openai_api_key_secret_provided ?
+    split(":", var.openai_api_key_secret_arn)[6]
+    :
+    aws_secretsmanager_secret.openai_api_key[0].name
+  )
+}
 resource "aws_secretsmanager_secret" "openai_api_key" {
+  count = var.openai_api_key != null ? 1 : 0
   name = (
     local.use_secrets_suffix ?
     format("%s-openai-api-key-%s", var.resource_prefix, local.secrets_suffix) :
@@ -489,7 +506,8 @@ resource "aws_secretsmanager_secret" "openai_api_key" {
   )
 }
 resource "aws_secretsmanager_secret_version" "openai_api_key" {
-  secret_id     = aws_secretsmanager_secret.openai_api_key.id
+  count         = var.openai_api_key != null ? 1 : 0
+  secret_id     = aws_secretsmanager_secret.openai_api_key[0].id
   secret_string = var.openai_api_key
 }
 resource "aws_secretsmanager_secret" "nebuly_credentials" {
@@ -594,18 +612,20 @@ locals {
   secret_provider_class_secret_name = "nebuly-platform-credentials"
 
   # k8s secrets keys
-  k8s_secret_key_analytics_db_username    = "analytics-db-username"
-  k8s_secret_key_analytics_db_password    = "analytics-db-password"
-  k8s_secret_key_auth_db_username         = "auth-db-username"
-  k8s_secret_key_auth_db_password         = "auth-db-password"
-  k8s_secret_key_jwt_signing_key          = "jwt-signing-key"
-  k8s_secret_key_openai_api_key           = "openai-api-key"
-  k8s_secret_key_nebuly_client_id         = "nebuly-azure-client-id"
-  k8s_secret_key_nebuly_client_secret     = "nebuly-azure-client-secret"
-  k8s_secret_key_okta_sso_client_id       = "okta-sso-client-id"
-  k8s_secret_key_okta_sso_client_secret   = "okta-sso-client-secret"
-  k8s_secret_key_google_sso_client_id     = "google-sso-client-id"
-  k8s_secret_key_google_sso_client_secret = "google-sso-client-secret"
+  k8s_secret_key_analytics_db_username       = "analytics-db-username"
+  k8s_secret_key_analytics_db_password       = "analytics-db-password"
+  k8s_secret_key_auth_db_username            = "auth-db-username"
+  k8s_secret_key_auth_db_password            = "auth-db-password"
+  k8s_secret_key_jwt_signing_key             = "jwt-signing-key"
+  k8s_secret_key_openai_api_key              = "openai-api-key"
+  k8s_secret_key_nebuly_client_id            = "nebuly-azure-client-id"
+  k8s_secret_key_nebuly_client_secret        = "nebuly-azure-client-secret"
+  k8s_secret_key_microsoft_sso_client_id     = "microsoft-sso-client-id"
+  k8s_secret_key_microsoft_sso_client_secret = "microsoft-sso-client-secret"
+  k8s_secret_key_okta_sso_client_id          = "okta-sso-client-id"
+  k8s_secret_key_okta_sso_client_secret      = "okta-sso-client-secret"
+  k8s_secret_key_google_sso_client_id        = "google-sso-client-id"
+  k8s_secret_key_google_sso_client_secret    = "google-sso-client-secret"
 
   bootstrap_helm_values = templatefile(
     "${path.module}/templates/helm-values-bootstrap.tpl.yaml",
@@ -649,6 +669,12 @@ locals {
       k8s_secret_key_google_sso_client_id     = local.k8s_secret_key_google_sso_client_id
       k8s_secret_key_google_sso_client_secret = local.k8s_secret_key_google_sso_client_secret
 
+      microsoft_sso_enabled                      = var.microsoft_sso != null
+      microsoft_sso_tenant_id                    = var.microsoft_sso != null ? var.microsoft_sso.tenant_id : ""
+      microsoft_sso_role_mapping                 = var.microsoft_sso != null ? join(",", [for role, group in var.microsoft_sso.role_mapping : "${role}:${group}"]) : ""
+      k8s_secret_key_microsoft_sso_client_id     = local.k8s_secret_key_microsoft_sso_client_id
+      k8s_secret_key_microsoft_sso_client_secret = local.k8s_secret_key_microsoft_sso_client_secret
+
       s3_bucket_name                    = aws_s3_bucket.ai_models.bucket
       clickhouse_backups_s3_bucket_name = aws_s3_bucket.backups.bucket
 
@@ -670,7 +696,7 @@ locals {
       secret_name_jwt_signing_key          = aws_secretsmanager_secret.auth_jwt_key.name
       secret_name_auth_db_credentials      = aws_secretsmanager_secret.rds_auth_credentials.name
       secret_name_analytics_db_credentials = aws_secretsmanager_secret.rds_analytics_credentials.name
-      secret_name_openai_api_key           = aws_secretsmanager_secret.openai_api_key.name
+      secret_name_openai_api_key           = local.openai_api_key_secret_name
       secret_name_okta_sso_credentials     = var.okta_sso == null ? "" : aws_secretsmanager_secret.okta_sso_credentials[0].name
 
       secret_name_nebuly_credentials = aws_secretsmanager_secret.nebuly_credentials.name
@@ -678,6 +704,10 @@ locals {
       okta_sso_enabled                      = var.okta_sso != null
       k8s_secret_key_okta_sso_client_id     = local.k8s_secret_key_okta_sso_client_id
       k8s_secret_key_okta_sso_client_secret = local.k8s_secret_key_okta_sso_client_secret
+
+      microsoft_sso_enabled                      = var.microsoft_sso != null
+      k8s_secret_key_microsoft_sso_client_id     = local.k8s_secret_key_microsoft_sso_client_id
+      k8s_secret_key_microsoft_sso_client_secret = local.k8s_secret_key_microsoft_sso_client_secret
 
       k8s_secret_key_auth_db_username      = local.k8s_secret_key_auth_db_username
       k8s_secret_key_auth_db_password      = local.k8s_secret_key_auth_db_password

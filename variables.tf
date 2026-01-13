@@ -37,6 +37,33 @@ variable "platform_domain" {
 variable "openai_api_key" {
   description = "The API Key used for authenticating with OpenAI."
   type        = string
+  default     = null
+}
+variable "openai_api_key_secret_arn" {
+  description = "ARN of an existing Secrets Manager secret containing the OpenAI API key. Mutually exclusive with openai_api_key."
+  type        = string
+  default     = null
+
+  validation {
+    condition = (
+      (var.openai_api_key_secret_arn == null && var.openai_api_key != null) ||
+      (var.openai_api_key_secret_arn != null && var.openai_api_key == null)
+    )
+    error_message = "You must specify exactly one of openai_api_key or openai_api_key_secret_arn."
+  }
+
+  # ARN format validation
+  validation {
+    condition = (
+      var.openai_api_key_secret_arn == null
+      ||
+      can(regex(
+        "^arn:(aws|aws-us-gov|aws-cn):secretsmanager:[a-z0-9-]+:\\d{12}:secret:[A-Za-z0-9/_+=.@-]+.*$",
+        var.openai_api_key_secret_arn
+      ))
+    )
+    error_message = "openai_api_key_secret_arn must be a valid AWS Secrets Manager secret ARN."
+  }
 }
 variable "openai_endpoint" {
   description = "The endpoint of the OpenAI API."
@@ -45,6 +72,7 @@ variable "openai_endpoint" {
 variable "openai_gpt4_deployment_name" {
   description = "The name of the deployment to use for the GPT-4 model."
   type        = string
+  default     = "gpt-4"
 }
 variable "nebuly_credentials" {
   type = object({
@@ -68,6 +96,17 @@ variable "okta_sso" {
 variable "google_sso" {
   description = "Settings for configuring the Google SSO integration."
   type = object({
+    client_id : string
+    client_secret : string
+    role_mapping : map(string)
+  })
+  default = null
+}
+
+variable "microsoft_sso" {
+  description = "Settings for configuring the Microsoft SSO integration."
+  type = object({
+    tenant_id : string
     client_id : string
     client_secret : string
     role_mapping : map(string)
@@ -103,9 +142,25 @@ variable "security_group" {
   })
   description = "The security group to use."
 }
+
+variable "create_eks_load_balancer_security_group" {
+  description = "If true, the module creates the EKS load balancer security group. If false, the module does not create one and may optionally use a provided security group id."
+  type        = bool
+  default     = true
+}
+
 variable "allowed_inbound_cidr_blocks" {
-  description = "The CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic"
+  description = "CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic."
   type        = map(string)
+  default     = {}
+
+  validation {
+    condition = (
+      !var.create_eks_load_balancer_security_group
+      || length(var.allowed_inbound_cidr_blocks) > 0
+    )
+    error_message = "allowed_inbound_cidr_blocks must be non-empty when create_eks_load_balancer_security_group is true."
+  }
 }
 variable "create_security_group_rules" {
   description = "If True, add to the specified security group the rules required for allowing connectivity between the provisioned services among all the specified subnets."
@@ -226,8 +281,8 @@ variable "eks_kubernetes_version" {
   description = "Specify which Kubernetes release to use."
   type        = string
   validation {
-    condition     = can(regex("1.32|1.31|1.30", var.eks_kubernetes_version))
-    error_message = "allowed versions are 1.32, 1.31, 1.30"
+    condition     = can(regex("1.34|1.33|1.32|1.31|1.30", var.eks_kubernetes_version))
+    error_message = "allowed versions are 1.34, 1.33, 1.32, 1.31, 1.30"
   }
 }
 variable "eks_cluster_endpoint_public_access" {
@@ -238,6 +293,45 @@ variable "eks_enable_cluster_creator_admin_permissions" {
   description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry."
   type        = bool
   default     = true
+}
+
+variable "eks_create_security_group" {
+  description = "If true, the module creates the EKS cluster security group."
+  type        = bool
+  default     = true
+}
+
+variable "eks_create_node_security_group" {
+  description = "If true, the module creates the EKS worker nodes security group."
+  type        = bool
+  default     = true
+}
+variable "eks_cluster_security_group_id" {
+  description = "Optional: existing security group id for the EKS control plane (cluster SG). If null, module creates one."
+  type        = string
+  default     = null
+
+  validation {
+    condition = (
+      var.eks_create_security_group
+      || (var.eks_cluster_security_group_id != null && var.eks_cluster_security_group_id != "")
+    )
+    error_message = "eks_cluster_security_group_id must be set when eks_create_security_group is false."
+  }
+}
+
+variable "eks_node_security_group_id" {
+  description = "Optional: existing security group id for EKS worker nodes (shared node SG). If null, module creates one."
+  type        = string
+  default     = null
+
+  validation {
+    condition = (
+      var.eks_create_node_security_group
+      || (var.eks_node_security_group_id != null && var.eks_node_security_group_id != "")
+    )
+    error_message = "eks_node_security_group_id must be set when eks_create_node_security_group is false."
+  }
 }
 variable "eks_cloudwatch_observability_enabled" {
   description = <<EOT
