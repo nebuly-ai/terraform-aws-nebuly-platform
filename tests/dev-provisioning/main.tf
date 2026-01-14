@@ -129,6 +129,9 @@ module "main" {
           }
         }
       }
+      network_interfaces = [{
+        associate_public_ip_address = false
+      }]
     }
     "gpu-a10" : {
       instance_types = ["g5.12xlarge"]
@@ -163,6 +166,10 @@ module "main" {
           effect = "NO_SCHEDULE"
         }
       }
+
+      network_interfaces = [{
+        associate_public_ip_address = false
+      }]
     }
   }
 }

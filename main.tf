@@ -346,6 +346,11 @@ module "eks" {
       }
 
       tags = obj.tags
+      network_interfaces = (
+        obj.network_interfaces != null
+        ? obj.network_interfaces
+        : null
+      )
     }
   }
 

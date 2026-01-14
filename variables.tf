@@ -371,6 +371,9 @@ variable "eks_managed_node_groups" {
       value  = optional(string)
       effect = string
     })))
+    network_interfaces = optional(list(object({
+      associate_public_ip_address = bool
+    })), null)
   }))
   default = {
     "workers" : {
