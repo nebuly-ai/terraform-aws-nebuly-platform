@@ -44,14 +44,6 @@ variable "openai_api_key_secret_arn" {
   type        = string
   default     = null
 
-  validation {
-    condition = (
-      (var.openai_api_key_secret_arn == null && var.openai_api_key != null) ||
-      (var.openai_api_key_secret_arn != null && var.openai_api_key == null)
-    )
-    error_message = "You must specify exactly one of openai_api_key or openai_api_key_secret_arn."
-  }
-
   # ARN format validation
   validation {
     condition = (
@@ -153,14 +145,6 @@ variable "allowed_inbound_cidr_blocks" {
   description = "CIDR blocks from which inbound connections will be accepted. Use 0.0.0.0/0 for allowing all inbound traffic."
   type        = map(string)
   default     = {}
-
-  validation {
-    condition = (
-      !var.create_eks_load_balancer_security_group
-      || length(var.allowed_inbound_cidr_blocks) > 0
-    )
-    error_message = "allowed_inbound_cidr_blocks must be non-empty when create_eks_load_balancer_security_group is true."
-  }
 }
 variable "create_security_group_rules" {
   description = "If True, add to the specified security group the rules required for allowing connectivity between the provisioned services among all the specified subnets."
@@ -310,28 +294,12 @@ variable "eks_cluster_security_group_id" {
   description = "Optional: existing security group id for the EKS control plane (cluster SG). If null, module creates one."
   type        = string
   default     = null
-
-  validation {
-    condition = (
-      var.eks_create_security_group
-      || (var.eks_cluster_security_group_id != null && var.eks_cluster_security_group_id != "")
-    )
-    error_message = "eks_cluster_security_group_id must be set when eks_create_security_group is false."
-  }
 }
 
 variable "eks_node_security_group_id" {
   description = "Optional: existing security group id for EKS worker nodes (shared node SG). If null, module creates one."
   type        = string
   default     = null
-
-  validation {
-    condition = (
-      var.eks_create_node_security_group
-      || (var.eks_node_security_group_id != null && var.eks_node_security_group_id != "")
-    )
-    error_message = "eks_node_security_group_id must be set when eks_create_node_security_group is false."
-  }
 }
 variable "eks_cloudwatch_observability_enabled" {
   description = <<EOT
