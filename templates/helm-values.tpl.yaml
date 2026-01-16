@@ -169,7 +169,7 @@ primaryProcessing:
 
 kafka:
   external: false
-  zookeeper:
+  controller:
     replicas: 1
     storage:
       class: gp3-csi
