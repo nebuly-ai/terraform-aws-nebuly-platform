@@ -336,14 +336,20 @@ module "eks" {
 
       enable_monitoring = true
 
-      iam_role_additional_policies = {
-        # Needed by the aws-ebs-csi-driver
-        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
-        # Needed by the aws-efs-csi-driver
-        AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
-        # Needed by CloudWatch agent
-        CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-      }
+      iam_role_additional_policies = merge(
+        {
+          # Needed by the aws-ebs-csi-driver
+          AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+          # Needed by the aws-efs-csi-driver
+          AmazonEFSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy"
+          # Needed by CloudWatch agent
+          CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+        },
+        obj.use_ecr ? {
+          # Needed by ECR access
+          AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        } : {}
+      )
 
       tags = obj.tags
       network_interfaces = (

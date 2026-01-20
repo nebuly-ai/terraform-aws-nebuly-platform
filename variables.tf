@@ -342,6 +342,7 @@ variable "eks_managed_node_groups" {
     network_interfaces = optional(list(object({
       associate_public_ip_address = bool
     })), null)
+    use_ecr = optional(bool, false)
   }))
   default = {
     "workers" : {
