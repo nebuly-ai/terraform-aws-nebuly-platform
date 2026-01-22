@@ -503,7 +503,11 @@ locals {
   # Determine the name of the OpenAI API key secret from arn if provided
   openai_api_key_secret_name = (
     local.openai_api_key_secret_provided ?
-    split(":", var.openai_api_key_secret_arn)[6]
+    replace(
+      element(split(":", trimspace(var.openai_api_key_secret_arn)), 6),
+      "/-[A-Za-z0-9]{6}$/",
+      ""
+    )
     :
     aws_secretsmanager_secret.openai_api_key[0].name
   )
