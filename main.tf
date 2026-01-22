@@ -537,6 +537,26 @@ resource "aws_secretsmanager_secret_version" "nebuly_credentials" {
     }
   )
 }
+resource "aws_secretsmanager_secret" "microsoft_sso_credentials" {
+  count = var.microsoft_sso == null ? 0 : 1
+
+  name = (
+    local.use_secrets_suffix ?
+    format("%s-microsoft-sso-credentials-%s", var.resource_prefix, local.secrets_suffix) :
+    format("%s-microsoft-sso-credentials", var.resource_prefix)
+  )
+}
+resource "aws_secretsmanager_secret_version" "microsoft_sso_credentials" {
+  count = var.microsoft_sso == null ? 0 : 1
+
+  secret_id = aws_secretsmanager_secret.microsoft_sso_credentials[0].id
+  secret_string = jsonencode(
+    {
+      "client_id" : var.microsoft_sso.client_id
+      "client_secret" : var.microsoft_sso.client_secret
+    }
+  )
+}
 resource "aws_secretsmanager_secret" "okta_sso_credentials" {
   count = var.okta_sso == null ? 0 : 1
 
