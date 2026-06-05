@@ -331,3 +331,12 @@ openAi:
   existingSecret:
     name: ${secret_provider_class_secret_name}
     apiKey: ${k8s_secret_key_openai_api_key}
+
+loki:
+  singleBinary:
+    persistence:
+      storageClass: gp3-csi
+
+  minio:
+    persistence:
+      storageClass: gp3-csi
