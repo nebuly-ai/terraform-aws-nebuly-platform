@@ -262,7 +262,7 @@ locals {
     }
     vpc-cni = {
       most_recent          = true
-      before_compute       = var.eks_enable_prefix_delegation
+      before_compute       = true
       configuration_values = local._vpc_cni_config_values
     }
     eks-pod-identity-agent = {
@@ -728,11 +728,11 @@ locals {
       secret_provider_class_name        = local.secret_provider_class_name
       secret_provider_class_secret_name = local.secret_provider_class_secret_name
 
-      secret_name_jwt_signing_key          = aws_secretsmanager_secret.auth_jwt_key.name
-      secret_name_auth_db_credentials      = aws_secretsmanager_secret.rds_auth_credentials.name
-      secret_name_analytics_db_credentials = aws_secretsmanager_secret.rds_analytics_credentials.name
-      secret_name_openai_api_key           = local.openai_api_key_secret_name
-      secret_name_okta_sso_credentials     = var.okta_sso == null ? "" : aws_secretsmanager_secret.okta_sso_credentials[0].name
+      secret_name_jwt_signing_key           = aws_secretsmanager_secret.auth_jwt_key.name
+      secret_name_auth_db_credentials       = aws_secretsmanager_secret.rds_auth_credentials.name
+      secret_name_analytics_db_credentials  = aws_secretsmanager_secret.rds_analytics_credentials.name
+      secret_name_openai_api_key            = local.openai_api_key_secret_name
+      secret_name_okta_sso_credentials      = var.okta_sso == null ? "" : aws_secretsmanager_secret.okta_sso_credentials[0].name
       secret_name_microsoft_sso_credentials = var.microsoft_sso == null ? "" : aws_secretsmanager_secret.microsoft_sso_credentials[0].name
 
       secret_name_nebuly_credentials = aws_secretsmanager_secret.nebuly_credentials.name
