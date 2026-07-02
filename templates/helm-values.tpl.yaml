@@ -347,6 +347,13 @@ mcpServer:
   ingress:
     annotations:
       nginx.ingress.kubernetes.io/use-regex: "true"
+      %{ if length(trimspace(acm_certificate_arn)) == 0 }
+      # ------------
+      # Cert-manager issuer.
+      # Remove this section if you're not using cert-manager for SSL certificates.
+      cert-manager.io/cluster-issuer: letsencrypt
+      # ------------
+      %{ endif }
     enabled: true
     className: "nginx"
     hosts:
