@@ -51,7 +51,7 @@ data "aws_security_group" "default" {
 # ------ Main ------ #
 module "main" {
   source  = "nebuly-ai/nebuly-platform/aws"
-  version = "0.15.5"
+  version = "0.15.6"
 
   security_group = data.aws_security_group.default
 
@@ -63,7 +63,7 @@ module "main" {
   rds_multi_availability_zone_enabled = false
   rds_availability_zone               = var.availability_zones[0]
 
-  openai_endpoint             = "<your-openai-endpoint>"
+  openai_endpoint             = "https://api.openai.com/v1" # or your own OpenAI endpoint
   openai_gpt4_deployment_name = "<your-openai-gpt4-deployment-name>"
   platform_domain             = "your.domain.com"
   nebuly_credentials = {
