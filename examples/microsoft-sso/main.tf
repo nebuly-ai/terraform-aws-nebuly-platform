@@ -21,7 +21,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~>5.45"
+      version = "~>6.23.0"
     }
   }
 }
@@ -51,7 +51,7 @@ data "aws_security_group" "default" {
 # ------ Main ------ #
 module "main" {
   source  = "nebuly-ai/nebuly-platform/aws"
-  version = "0.14.0"
+  version = "0.15.7"
 
   security_group = data.aws_security_group.default
 
@@ -63,7 +63,7 @@ module "main" {
   rds_multi_availability_zone_enabled = false
   rds_availability_zone               = var.availability_zones[0]
 
-  openai_endpoint             = "<your-openai-endpoint>"
+  openai_endpoint             = "https://api.openai.com/v1" # or your own OpenAI endpoint
   openai_gpt4_deployment_name = "<your-openai-gpt4-deployment-name>"
   platform_domain             = "your.domain.com"
   nebuly_credentials = {
@@ -91,6 +91,60 @@ module "main" {
   subnet_ids      = data.aws_subnets.default.ids
   resource_prefix = "nebuly"
   openai_api_key  = "my-key"
+
+  eks_managed_node_groups = {
+    "workers" : {
+      instance_types = ["r5.xlarge"]
+      min_size       = 1
+      max_size       = 1
+      desired_size   = 1
+      block_device_mappings = {
+        sdc = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 128
+            volume_type           = "gp3"
+            delete_on_termination = true
+            encrypted             = true
+          }
+        }
+      }
+      }
+    "gpu-a10" : {
+      instance_types = ["g5.12xlarge"]
+      ami_type       = "AL2023_x86_64_NVIDIA"
+      min_size       = 0
+      max_size       = 1
+      desired_size   = 0
+      disk_size_gb   = 128
+
+      block_device_mappings = {
+        sdc = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 128
+            volume_type           = "gp3"
+            delete_on_termination = true
+            encrypted             = true
+          }
+        }
+      }
+
+      labels = {
+        "nvidia.com/gpu.present" : "true",
+        "nebuly.com/accelerator" : "nvidia-ampere-a10",
+      }
+      tags = {
+        "k8s.io/cluster-autoscaler/enabled" : "true",
+      }
+      taints = {
+        gpu = {
+          key    = "nvidia.com/gpu"
+          effect = "NO_SCHEDULE"
+        }
+      }
+    }
+  }
 }
 
 

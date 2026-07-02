@@ -21,7 +21,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~>5.45"
+      version = "~>6.23.0"
     }
   }
 }
@@ -51,7 +51,7 @@ data "aws_security_group" "default" {
 # ------ Main ------ #
 module "main" {
   source  = "nebuly-ai/nebuly-platform/aws"
-  version = "0.15.6"
+  version = "0.15.7"
 
   security_group = data.aws_security_group.default
 
