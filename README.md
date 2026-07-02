@@ -35,6 +35,7 @@ The following are the IAM policies required by the IAM users used to run the Ter
 - **SecretsManagerReadWrite**
 - **CloudWatchFullAccess**
 - **AmazonVPCFullAccess**
+- **AmazonSSMFullAccess**
 
 </details>
 
@@ -66,7 +67,8 @@ The following are the IAM policies required by the IAM users used to run the Ter
                 "iam:PutRolePolicy",
                 "iam:GetRolePolicy",
                 "iam:DetachRolePolicy",
-                "iam:DeleteRolePolicy"
+                "iam:DeleteRolePolicy",
+                "iam:ListRolePolicies"
             ],
             "Resource": [
                 "*"

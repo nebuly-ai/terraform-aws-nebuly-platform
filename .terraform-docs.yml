@@ -51,6 +51,7 @@ content: |-
   - **SecretsManagerReadWrite**
   - **CloudWatchFullAccess**
   - **AmazonVPCFullAccess**
+  - **AmazonSSMFullAccess**
 
   </details>
 
@@ -82,7 +83,8 @@ content: |-
                   "iam:PutRolePolicy",
                   "iam:GetRolePolicy",
                   "iam:DetachRolePolicy",
-                  "iam:DeleteRolePolicy"
+                  "iam:DeleteRolePolicy",
+                  "iam:ListRolePolicies"
               ],
               "Resource": [
                   "*"
